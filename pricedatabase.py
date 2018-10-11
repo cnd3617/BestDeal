@@ -36,7 +36,8 @@ class PriceDatabase:
         """
         OK
         """
-        query = 'INSERT INTO {} ({}) VALUES({})'.format(table, ','.join(columns), '?'*len(values))
+        query = 'INSERT INTO {} ({}) VALUES({})'.format(table, ','.join(columns), ','.join(['?']*len(values)))
+        self.logger.debug('Query [{}]'.format(query))
         self.cursor.execute(query, tuple(values,))
         return self.cursor.lastrowid
 
