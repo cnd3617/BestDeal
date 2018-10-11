@@ -65,9 +65,9 @@ class PriceDatabase:
         return object_id
     
     def add_price(self, product_id, source_id, histo_price):
-        query = 'INSERT INTO histo (product_id, source_id, histo_price, histo_date) VALUES(?, ?, ?, ?)'
-        self.cursor.execute(query, (product_id, source_id, histo_price, self.today_datetime,))
-        return self.cursor.lastrowid
+        return self.generic_insert(table='histo',
+                                   columns=['product_id', 'source_id', 'histo_price', 'histo_date'],
+                                   values=[product_id, source_id, histo_price, self.today_datetime])
     
     @staticmethod
     def build_where_clause(columns, values):
