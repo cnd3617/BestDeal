@@ -33,18 +33,12 @@ class PriceDatabase:
         self.connection.commit()
         
     def generic_insert(self, table, columns, values):
-        """
-        OK
-        """
         query = 'INSERT INTO {} ({}) VALUES({})'.format(table, ','.join(columns), ','.join(['?']*len(values)))
         self.logger.debug('Query [{}]'.format(query))
         self.cursor.execute(query, tuple(values,))
         return self.cursor.lastrowid
 
     def generic_select(self, table, columns, where_clause, additional_clause=''):
-        """
-        OK
-        """
         selected_columns = ','.join(columns) if columns else '*'
         query = 'SELECT {} FROM {} where {} {}'.format(selected_columns, table, where_clause, additional_clause)
         self.logger.debug('Query [{}]'.format(query))
