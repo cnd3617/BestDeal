@@ -66,7 +66,7 @@ class PriceDatabase:
         where_clause = PriceDatabase.build_where_clause(columns, values)
         object_id = self.get_object_id(table, ['{}_id'.format(table)], where_clause)
         if object_id is None:
-            self.logger.info('New [{}]: [{}]'.format(table, *values))
+            self.logger.info('New [{}]: {}'.format(table, values))
             object_id = self.generic_insert(table, columns, values)
         return object_id
     
