@@ -7,8 +7,33 @@ def clean_price(dirty_price):
     """
     Clean the price to facilitate comparisons
     """
-    m = re.search('([0-9.,]+)', dirty_price)
+    m = re.search('([0-9.,]+)|([0-9]+)\€([0-9]+)', dirty_price)
+    print(len(m.group()))
+    print(m.group(1))
+    print(m.group(2))
+    print(m.group(3))
     return m.group(0)
+
+
+class CDiscount:
+    """
+    WORK IN PROGRESS
+    """
+    def __init__(self):
+        self.source_name = __class__.__name__
+        
+    @staticmethod
+    def fetch_deals():
+        deals = {}
+        with urllib.request.urlopen('https://bit.ly/2A5clfN') as response:
+            html = response.read()
+            soup = BeautifulSoup.BeautifulSoup(html, 'html.parser')
+            # print(soup.prettify())
+            for item in soup.findAll('div', attrs={'class': 'jsPrdBlocContainer'}):
+                product_name = item.find('div', attrs={'class': 'prdtBILTit'}).text
+                product_price = clean_price(item.find('span', attrs={'class': 'price'}).text)
+                deals[product_name] = product_price
+        return deals
 
 
 class TopAchat:
@@ -29,5 +54,5 @@ class TopAchat:
 
 
 if __name__ == '__main__':
-    clean_price('      422.45   €*')
-    clean_price('   ---   422,45   €*')
+    for case in ['      422.45   €*', '   ---   422,45   €*', '422€45']: # TODO: fix last case !
+        print('[%s] -> [%s]' % (case, clean_price(case)))
