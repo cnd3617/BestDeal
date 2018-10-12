@@ -12,9 +12,6 @@ def clean_price(dirty_price):
 
 
 class CDiscount:
-    """
-    WORK IN PROGRESS
-    """
     def __init__(self):
         self.source_name = __class__.__name__
         
