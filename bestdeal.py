@@ -53,3 +53,4 @@ if __name__ == '__main__':
                         datefmt='%d/%m/%Y %H:%M:%S %p')
     bd = BestDeal()
     bd.record_best_deals()
+    bd.display_best_deals()
