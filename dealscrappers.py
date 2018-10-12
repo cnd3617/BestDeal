@@ -7,12 +7,8 @@ def clean_price(dirty_price):
     """
     Clean the price to facilitate comparisons
     """
-    m = re.search('([0-9.,]+)|([0-9]+)\€([0-9]+)', dirty_price)
-    print(len(m.group()))
-    print(m.group(1))
-    print(m.group(2))
-    print(m.group(3))
-    return m.group(0)
+    m = re.search('([0-9]+)[€.,]+([0-9]+)', dirty_price)
+    return '{}.{}'.format(m.group(1), m.group(2))
 
 
 class CDiscount:
@@ -54,5 +50,5 @@ class TopAchat:
 
 
 if __name__ == '__main__':
-    for case in ['      422.45   €*', '   ---   422,45   €*', '422€45']: # TODO: fix last case !
+    for case in ['      422.45   €*', '   ---   422,45   €*', '422€45']:
         print('[%s] -> [%s]' % (case, clean_price(case)))
