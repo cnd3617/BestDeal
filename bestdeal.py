@@ -32,7 +32,10 @@ class BestDeal:
             deals = source.fetch_deals()
             for product_name, product_price in deals.items():
                 product_type = self.extract_product_type(product_name)
-                self.update_price(product_name, product_type, source.__name__, product_price)
+                if product_type:
+                    self.update_price(product_name, product_type, source.__name__, product_price)
+                else:
+                    self.logger.info('Ignoring [{}]'.format(product_name))
 
     def update_price(self, product_name, product_type, source_name, new_price):
         source_id = self.db.insert_if_necessary(table='source',  columns=['source_name'], values=[source_name])
