@@ -26,7 +26,7 @@ class BestDeal:
             self.logger.info('Cheapest [{product_type}] -> [{product_name}] for [{histo_price}]€'.format(**product))
 
     def record_best_deals(self):
-        sources = [dealscrappers.TopAchat]
+        sources = [dealscrappers.TopAchat, dealscrappers.CDiscount]
         for source in sources:
             self.logger.info('Fetch deals from [{}]'.format(source.__name__))
             deals = source.fetch_deals()
