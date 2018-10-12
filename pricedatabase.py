@@ -20,13 +20,22 @@ class PriceDatabase:
         self.logger = logging.getLogger(__name__)
         self.today_date = datetime.now(timezone.utc).strftime('%Y%m%d')
         self.today_datetime = datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')
-        self.connection = sqlite3.connect(database='PricesHistorization.db', isolation_level=None) # isolation_level=None => auto commit
+        # isolation_level=None => auto commit
+        self.connection = sqlite3.connect(database='PricesHistorization.db', isolation_level=None)
         self.connection.row_factory = dict_factory
         self.cursor = self.connection.cursor()
         queries = [
-            'CREATE TABLE IF NOT EXISTS product (product_id INTEGER PRIMARY KEY AUTOINCREMENT, product_name TEXT UNIQUE, product_type TEXT)',
-            'CREATE TABLE IF NOT EXISTS source (source_id INTEGER PRIMARY KEY AUTOINCREMENT, source_name TEXT UNIQUE)',
-            'CREATE TABLE IF NOT EXISTS histo (histo_id INTEGER PRIMARY KEY AUTOINCREMENT, histo_price TEXT, histo_date TEXT, product_id INTEGER NOT NULL REFERENCES product(product_id), source_id INTEGER NOT NULL REFERENCES source(source_id))'
+            'CREATE TABLE IF NOT EXISTS product '
+            '(product_id INTEGER PRIMARY KEY AUTOINCREMENT, product_name TEXT UNIQUE, product_type TEXT)',
+
+            'CREATE TABLE IF NOT EXISTS source '
+            '(source_id INTEGER PRIMARY KEY AUTOINCREMENT, source_name TEXT UNIQUE)',
+
+            'CREATE TABLE IF NOT EXISTS histo '
+            '(histo_id INTEGER PRIMARY KEY AUTOINCREMENT, '
+            'histo_price TEXT, histo_date TEXT, '
+            'product_id INTEGER NOT NULL REFERENCES product(product_id), '
+            'source_id INTEGER NOT NULL REFERENCES source(source_id))'
         ]
         for query in queries:
             self.cursor.execute(query)
@@ -57,7 +66,7 @@ class PriceDatabase:
         return None
     
     def insert_if_necessary(self, table, columns, values):
-        where_clause = PriceDatabase.build_where_clause(columns, values)
+        where_clause = self.build_where_clause(columns, values)
         object_id = self.get_object_id(table, ['{}_id'.format(table)], where_clause)
         if object_id is None:
             self.logger.info('New [{}]: {}'.format(table, values))
@@ -79,8 +88,7 @@ class PriceDatabase:
         """
         SELECT histo_price, histo_date FROM histo WHERE product_id=1 AND source_id=1 ORDER BY histo_date DESC LIMIT 1
         """
-        where_clause = PriceDatabase.build_where_clause(columns=['product_id', 'source_id'],
-                                                        values=[product_id, source_id])
+        where_clause = self.build_where_clause(columns=['product_id', 'source_id'], values=[product_id, source_id])
         fetched_values = self.generic_select(table='histo', columns=['histo_price'], where_clause=where_clause, additional_clause='ORDER BY histo_date DESC LIMIT 1')
         if fetched_values:
             return fetched_values[0]['histo_price']
@@ -90,8 +98,7 @@ class PriceDatabase:
         """
         SELECT min(histo_price), histo_date FROM histo WHERE product_id=1 AND source_id=1
         """
-        where_clause = PriceDatabase.build_where_clause(columns=['product_id', 'source_id'],
-                                                        values=[product_id, source_id])
+        where_clause = self.build_where_clause(columns=['product_id', 'source_id'], values=[product_id, source_id])
         fetched_values = self.generic_select(table='histo', columns=['min(histo_price)'], where_clause=where_clause)
         if fetched_values:
             return fetched_values[0]['min(histo_price)']
@@ -101,8 +108,7 @@ class PriceDatabase:
         """
         SELECT min(histo_price), histo_date FROM histo WHERE product_id=1 AND source_id=1
         """
-        where_clause = PriceDatabase.build_where_clause(columns=['product_id', 'source_id'],
-                                                        values=[product_id, source_id])
+        where_clause = self.build_where_clause(columns=['product_id', 'source_id'], values=[product_id, source_id])
         fetched_values = self.generic_select(table='histo',
                                              columns=['min(histo_price)'],
                                              where_clause=where_clause,
