@@ -110,3 +110,11 @@ class PriceDatabase:
         if fetched_values:
             return fetched_values[0]['min(histo_price)']
         return None
+
+    def get_cheapest_by_product_type(self, date):
+        query = 'SELECT product_name, product_type, MIN(histo_price) AS histo_price ' \
+                'FROM histo, product ' \
+                'WHERE histo.product_id = product.product_id AND histo.histo_date LIKE "{}_%"' \
+                'GROUP BY product_type'.format(date)
+        self.cursor.execute(query)
+        return self.cursor.fetchall()

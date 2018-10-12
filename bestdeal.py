@@ -19,6 +19,12 @@ class BestDeal:
             product_type += ' Ti'
         return product_type
 
+    def display_best_deals(self):
+        cheapest_products = self.db.get_cheapest_by_product_type(self.db.today_date)
+        self.logger.info('Best deals for [{}]'.format(self.db.today_date))
+        for product in cheapest_products:
+            self.logger.info('Cheapest [{product_type}] -> [{product_name}] for [{histo_price}]€'.format(**product))
+
     def record_best_deals(self):
         sources = [dealscrappers.TopAchat]
         for source in sources:
