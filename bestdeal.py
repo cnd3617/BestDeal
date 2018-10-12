@@ -11,11 +11,11 @@ class BestDeal:
 
     @staticmethod
     def extract_product_type(product_name):
-        product_type = 'N/A'
+        product_type = None
         for model in ['1070', '1080', '2060', '2070', '2080']:
             if model in product_name:
                 product_type = 'GTX ' + model
-        if product_type != 'N/A' and ' ti' in product_name.lower() or 'ti ' in product_name.lower():
+        if product_type and (' ti' in product_name.lower() or 'ti ' in product_name.lower()):
             product_type += ' Ti'
         return product_type
 
