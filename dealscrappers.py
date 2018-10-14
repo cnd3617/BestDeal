@@ -21,7 +21,6 @@ class CDiscount:
         with urllib.request.urlopen('https://bit.ly/2A5clfN') as response:
             html = response.read()
             soup = BeautifulSoup.BeautifulSoup(html, 'html.parser')
-            # print(soup.prettify())
             for item in soup.findAll('div', attrs={'class': 'jsPrdBlocContainer'}):
                 product_name = item.find('div', attrs={'class': 'prdtBILTit'}).text
                 product_price = clean_price(item.find('span', attrs={'class': 'price'}).text)
