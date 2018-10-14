@@ -2,12 +2,21 @@ import sys
 import pricedatabase
 import logging
 import dealscrappers
+import time
 
 
 class BestDeal:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.db = pricedatabase.PriceDatabase()
+
+    def continuous_watch(self):
+        wait_in_seconds = 900
+        while True:
+            self.record_best_deals()
+            self.display_best_deals()
+            self.logger.info('Waiting [{}] seconds until next deal watch'.format(wait_in_seconds))
+            time.sleep(wait_in_seconds)
 
     @staticmethod
     def extract_product_type(product_name):
@@ -52,6 +61,6 @@ if __name__ == '__main__':
                         level=logging.INFO,
                         format='%(asctime)s.%(msecs)03d %(levelname)-8s %(message)s',
                         datefmt='%d/%m/%Y %H:%M:%S %p')
+
     bd = BestDeal()
-    bd.record_best_deals()
-    bd.display_best_deals()
+    bd.continuous_watch()
