@@ -20,10 +20,10 @@ class BestDeal:
         return product_type
 
     def display_best_deals(self):
-        cheapest_products = self.db.get_cheapest_by_product_type(self.db.today_date)
+        cheapest_products = self.db.get_cheapest_by_product_type()
         self.logger.info('Best deals for [{}]'.format(self.db.today_date))
         for product in cheapest_products:
-            self.logger.info('Cheapest [{product_type}] -> [{product_name}] for [{histo_price}]€'.format(**product))
+            self.logger.info('Cheapest [{product_type}] [{source_name}] -> [{product_name}] for [{histo_price}]€'.format(**product))
 
     def record_best_deals(self):
         sources = [dealscrappers.TopAchat, dealscrappers.CDiscount]
@@ -40,9 +40,9 @@ class BestDeal:
     def update_price(self, product_name, product_type, source_name, new_price):
         source_id = self.db.insert_if_necessary(table='source',  columns=['source_name'], values=[source_name])
         product_id = self.db.insert_if_necessary(table='product', columns=['product_name', 'product_type'], values=[product_name, product_type])
-        last_price = self.db.get_last_price(product_id, source_id)
-        if last_price is None or last_price != new_price:
-            previous_price_info = 'Previous price [{}]'.format(last_price) if last_price else ''
+        today_last_price = self.db.get_last_price_for_today(product_id, source_id)
+        if today_last_price is None or today_last_price != new_price:
+            previous_price_info = 'Today last price [{}]'.format(today_last_price) if today_last_price else ''
             self.logger.info('New price for [{}] from [{}] : [{}] {}'.format(product_name, source_name, new_price, previous_price_info))
             self.db.add_price(product_id, source_id, new_price)
 

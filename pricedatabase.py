@@ -84,13 +84,17 @@ class PriceDatabase:
         where_clause = ' and '.join(['='.join(t) for t in zip(columns, enclosed_values)])
         return where_clause
     
-    def get_last_price(self, product_id, source_id):
+    def get_last_price_for_today(self, product_id, source_id):
         """
-        SELECT histo_price, histo_date FROM histo WHERE product_id=1 AND source_id=1 ORDER BY histo_date DESC LIMIT 1
+        SELECT histo_price, histo_date FROM histo WHERE product_id=45 AND source_id=2 AND histo.histo_date like '20181013_%' ORDER BY histo_date DESC LIMIT 1
         """
         where_clause = self.build_where_clause(columns=['product_id', 'source_id'], values=[product_id, source_id])
-        fetched_values = self.generic_select(table='histo', columns=['histo_price'], where_clause=where_clause, additional_clause='ORDER BY histo_date DESC LIMIT 1')
+        fetched_values = self.generic_select(table='histo',
+                                             columns=['histo_price'],
+                                             where_clause=where_clause,
+                                             additional_clause=' AND histo.histo_date like "{}_%" ORDER BY histo_date DESC LIMIT 1'.format(self.today_date))
         if fetched_values:
+            assert (len(fetched_values) == 1)
             return fetched_values[0]['histo_price']
         return None
     
@@ -103,24 +107,11 @@ class PriceDatabase:
         if fetched_values:
             return fetched_values[0]['min(histo_price)']
         return None
-    
-    def get_cheapest_price_for_date(self, product_id, source_id, date):
-        """
-        SELECT min(histo_price), histo_date FROM histo WHERE product_id=1 AND source_id=1
-        """
-        where_clause = self.build_where_clause(columns=['product_id', 'source_id'], values=[product_id, source_id])
-        fetched_values = self.generic_select(table='histo',
-                                             columns=['min(histo_price)'],
-                                             where_clause=where_clause,
-                                             additional_clause='and histo_date like "{}_%"'.format(date))
-        if fetched_values:
-            return fetched_values[0]['min(histo_price)']
-        return None
 
-    def get_cheapest_by_product_type(self, date):
-        query = 'SELECT product_name, product_type, MIN(histo_price) AS histo_price ' \
-                'FROM histo, product ' \
-                'WHERE histo.product_id = product.product_id AND histo.histo_date LIKE "{}_%"' \
-                'GROUP BY product_type'.format(date)
+    def get_cheapest_by_product_type(self):
+        query = 'SELECT product_name, product_type, min(histo_price) AS histo_price, histo_date, source_name ' \
+                'FROM histo, product, source ' \
+                'WHERE product.product_id = histo.product_id AND histo.histo_date like "20181014_%" ' \
+                'GROUP BY product_type'
         self.cursor.execute(query)
         return self.cursor.fetchall()
