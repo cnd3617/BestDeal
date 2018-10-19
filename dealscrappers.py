@@ -90,6 +90,32 @@ class TopAchat:
         return deals
 
 
+class Cybertek:
+    """
+    TODO: improve this scrapper
+    """
+    def __init__(self):
+        self.source_name = __class__.__name__
+
+    @staticmethod
+    def fetch_deals():
+        site = 'https://bit.ly/2PJsdtN'
+        html = requests.get(url=site, headers=headers)
+        soup = BeautifulSoup.BeautifulSoup(html.text, 'html.parser')
+        print(soup.prettify())
+        deals = {}
+        products = soup.find('div', attrs={'class': 'categorie-filtre lst_grid'})
+        for item in products.findAll('div'):
+            try:
+                product_name = item.find('a', attrs={'title': 'Voir la fiche produit'}).text.replace('En Stock', '')
+                product_price = clean_price(item.find('div', attrs={'class': 'price_prod_resp'}).text)
+                deals[product_name] = product_price
+            except:
+                pass
+        return deals
+
+
 if __name__ == '__main__':
-    for case in ['      422.45   €*', '   ---   422,45   €*', '422€45']:
-        print('[%s] -> [%s]' % (case, clean_price(case)))
+    Cybertek.fetch_deals()
+    # for case in ['      422.45   €*', '   ---   422,45   €*', '422€45']:
+    #     print('[%s] -> [%s]' % (case, clean_price(case)))
