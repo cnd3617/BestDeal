@@ -42,7 +42,7 @@ class BestDeal:
             for product_name, product_price in deals.items():
                 product_type = self.extract_product_type(product_name)
                 if product_type:
-                    self.update_price(product_name, product_type, source.__name__, product_price)
+                    self.update_price(product_name, product_type, source.__name__, float(product_price))
                 else:
                     self.logger.debug('Ignoring [{}]'.format(product_name))
 

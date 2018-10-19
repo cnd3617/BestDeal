@@ -33,7 +33,8 @@ class PriceDatabase:
 
             'CREATE TABLE IF NOT EXISTS histo '
             '(histo_id INTEGER PRIMARY KEY AUTOINCREMENT, '
-            'histo_price TEXT, histo_date TEXT, '
+            'histo_price REAL,'
+            'histo_date TEXT, '
             'product_id INTEGER NOT NULL REFERENCES product(product_id), '
             'source_id INTEGER NOT NULL REFERENCES source(source_id))'
         ]
@@ -95,7 +96,7 @@ class PriceDatabase:
                                              additional_clause=' AND histo.histo_date like "{}_%" ORDER BY histo_date DESC LIMIT 1'.format(self.today_date))
         if fetched_values:
             assert (len(fetched_values) == 1)
-            return fetched_values[0]['histo_price']
+            return float(fetched_values[0]['histo_price'])
         return None
     
     def get_cheapest_price(self, product_id, source_id):
@@ -105,7 +106,7 @@ class PriceDatabase:
         where_clause = self.build_where_clause(columns=['product_id', 'source_id'], values=[product_id, source_id])
         fetched_values = self.generic_select(table='histo', columns=['min(histo_price)'], where_clause=where_clause)
         if fetched_values:
-            return fetched_values[0]['min(histo_price)']
+            return float(fetched_values[0]['min(histo_price)'])
         return None
 
     def get_cheapest_by_product_type(self):
