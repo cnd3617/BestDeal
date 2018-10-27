@@ -120,7 +120,12 @@ class Cybertek:
         products = soup.find('div', attrs={'class': 'categorie-filtre lst_grid'})
         for item in products.findAll('div'):
             try:
-                product_name = item.find('a', attrs={'title': 'Voir la fiche produit'}).text.replace('En Stock', '')
+                fiche = item.find('a', attrs={'title': 'Voir la fiche produit'})
+                try:
+                    fiche.find('span', attrs={'class': 'prodfiche_dispo'}).decompose()
+                except:
+                    pass
+                product_name = fiche.text
                 product_price = clean_price(item.find('div', attrs={'class': 'price_prod_resp'}).text)
                 deals[product_name] = product_price
             except:
