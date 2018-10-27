@@ -104,6 +104,32 @@ class TopAchat:
         return deals
 
 
+class HardwareShop:
+    """
+    TODO: FIX ME
+    """
+    def __init__(self):
+        self.source_name = __class__.__name__
+
+    @staticmethod
+    def fetch_deals():
+        site = 'https://bit.ly/2PhtQBO'
+        html = requests.get(url=site, headers=headers)
+        soup = BeautifulSoup.BeautifulSoup(html.text, 'html.parser')
+        print(soup.prettify())
+        deals = {}
+        items = soup.find_all('li', attrs={'data-ref': re.compile("[A-Za-z0-9]")})
+        for item in items:
+            product_name = item.find('div', attrs={'class': 'description'}).find('h2').text
+            for script_section in soup.findAll('script'):
+                if '.price-wrapper' in script_section.text:
+                    print(script_section.prettify())
+
+            product_price = clean_price(item.find('div', attrs={'class': 'price_prod_resp'}).text)
+            deals[product_name] = product_price
+        return deals
+
+
 class Cybertek:
     """
     TODO: improve this scrapper
