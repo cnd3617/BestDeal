@@ -19,20 +19,26 @@ headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KH
             'Accept-Language': 'en-US,en;q=0.8',
             'Connection': 'keep-alive'}
 
+
 class RueDuCommerce:
     def __init__(self):
         self.source_name = __class__.__name__
 
     @staticmethod
     def fetch_deals():
-        site = 'https://bit.ly/2A5clfN'
-        html = requests.get(url=site, headers=headers)
-        soup = BeautifulSoup.BeautifulSoup(html.text, 'html.parser')
+        sites = [
+            'https://bit.ly/2ApT5JK',  # GTX 1080 Ti
+            'https://bit.ly/2OMZJ5E',  # RTX 2080
+            'https://bit.ly/2CCjB4b',  # RTX 2080 Ti
+        ]
         deals = {}
-        for item in soup.findAll('article', attrs={'itemtype': 'http://schema.org/Product'}):
-            product_name = item.find('div', attrs={'itemprop': 'description'}).text
-            product_price = item.find('meta', attrs={'itemprop': 'price'}).attrs['content']
-            deals[product_name] = product_price
+        for site in sites:
+            html = requests.get(url=site, headers=headers)
+            soup = BeautifulSoup.BeautifulSoup(html.text, 'html.parser')
+            for item in soup.find_all('article', attrs={'itemtype': 'http://schema.org/Product'}):
+                product_name = item.find('div', attrs={'class': 'summary'}).text
+                product_price = clean_price(item.find('div', attrs={'class': 'price'}).text)
+                deals[product_name] = product_price
         return deals
 
 
