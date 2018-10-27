@@ -68,12 +68,20 @@ class CDiscount:
 
     @staticmethod
     def fetch_deals():
+        sites = [
+            'https://bit.ly/2O2raU4',  # GTX 1080 Ti
+            'https://bit.ly/2Pi0W4r',  # RTX 2080
+            'https://bit.ly/2yzGzWO',  # RTX 2080 Ti
+        ]
         deals = {}
-        with urllib.request.urlopen('https://bit.ly/2A5clfN') as response:
-            html = response.read()
-            soup = BeautifulSoup.BeautifulSoup(html, 'html.parser')
+        for site in sites:
+            html = requests.get(url=site, headers=headers)
+            soup = BeautifulSoup.BeautifulSoup(html.text, 'html.parser')
             for item in soup.findAll('div', attrs={'class': 'jsPrdBlocContainer'}):
                 product_name = item.find('div', attrs={'class': 'prdtBILTit'}).text
+                filtered_words = ['Aquacomputer', 'Watercooling', 'Alphacool', 'Acrylic', 'Ventilation', 'igame']
+                if any(word in product_name for word in filtered_words):
+                    continue
                 product_price = clean_price(item.find('span', attrs={'class': 'price'}).text)
                 deals[product_name] = product_price
         return deals
