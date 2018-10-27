@@ -55,8 +55,8 @@ class GrosBill:
         for product in soup.find('table', attrs={'id': 'listing_mode_display'}).findAll('tr'):
             try:
                 product_name = product.find('div', attrs={'class': 'product_description'}).find('a').text
-                product_price = product.find('td', attrs={'class': 'btn_price_wrapper'}).find('b').text
-                deals[product_name] = clean_price(product_price)
+                product_price = clean_price(product.find('td', attrs={'class': 'btn_price_wrapper'}).find('b').text)
+                deals[product_name] = product_price
             except Exception as exception:
                 print(exception)
         return deals
@@ -108,7 +108,6 @@ class Cybertek:
         site = 'https://bit.ly/2PJsdtN'
         html = requests.get(url=site, headers=headers)
         soup = BeautifulSoup.BeautifulSoup(html.text, 'html.parser')
-        print(soup.prettify())
         deals = {}
         products = soup.find('div', attrs={'class': 'categorie-filtre lst_grid'})
         for item in products.findAll('div'):

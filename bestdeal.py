@@ -68,3 +68,4 @@ if __name__ == '__main__':
 
     bd = BestDeal()
     bd.continuous_watch()
+    # bd.display_best_deals()
