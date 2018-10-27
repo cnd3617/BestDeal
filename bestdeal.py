@@ -32,7 +32,7 @@ class BestDeal:
         cheapest_products = self.db.get_cheapest_by_product_type()
         self.logger.info('Best deals for [{}]'.format(self.db.today_date))
         for product in cheapest_products:
-            self.logger.info('Cheapest [{product_type}] [{source_name}] -> [{product_name}] for [{histo_price}]€'.format(**product))
+            self.logger.info('Cheapest [{product_type:11}] [{histo_price:7}]€ [{product_name:115}] [{source_name:13}]'.format(**product))
 
     def record_best_deals(self):
         sources = [dealscrappers.TopAchat,
@@ -55,8 +55,8 @@ class BestDeal:
         product_id = self.db.insert_if_necessary(table='product', columns=['product_name', 'product_type'], values=[product_name, product_type])
         today_last_price = self.db.get_last_price_for_today(product_id, source_id)
         if today_last_price is None or today_last_price != new_price:
-            previous_price_info = 'Today last price [{}]'.format(today_last_price) if today_last_price else ''
-            self.logger.info('New price for [{}] from [{}] : [{}] {}'.format(product_name, source_name, new_price, previous_price_info))
+            previous_price_info = 'Today last price [{:7}]'.format(today_last_price) if today_last_price else ''
+            self.logger.info('New price for [{:115}] from [{:13}] : [{:7}] {}'.format(product_name, source_name, new_price, previous_price_info))
             self.db.add_price(product_id, source_id, new_price)
 
 
