@@ -18,8 +18,6 @@ class PriceDatabase:
     """
     def __init__(self):
         self.logger = logging.getLogger(__name__)
-        self.today_date = datetime.now(timezone.utc).strftime('%Y%m%d')
-        self.today_datetime = datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')
         # isolation_level=None => auto commit
         self.connection = sqlite3.connect(database='PricesHistorization.db', isolation_level=None)
         self.connection.row_factory = dict_factory
@@ -41,7 +39,15 @@ class PriceDatabase:
         for query in queries:
             self.cursor.execute(query)
         self.connection.commit()
-        
+
+    @staticmethod
+    def get_today_date():
+        return datetime.now(timezone.utc).strftime('%Y%m%d')
+
+    @staticmethod
+    def get_today_datetime():
+        return datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')
+
     def generic_insert(self, table, columns, values):
         query = 'INSERT INTO {} ({}) VALUES({})'.format(table, ','.join(columns), ','.join(['?']*len(values)))
         self.logger.debug('Query [{}]'.format(query))
@@ -77,7 +83,7 @@ class PriceDatabase:
     def add_price(self, product_id, source_id, histo_price):
         return self.generic_insert(table='histo',
                                    columns=['product_id', 'source_id', 'histo_price', 'histo_date'],
-                                   values=[product_id, source_id, histo_price, self.today_datetime])
+                                   values=[product_id, source_id, histo_price, self.get_today_datetime()])
     
     @staticmethod
     def build_where_clause(columns, values):
@@ -93,7 +99,7 @@ class PriceDatabase:
         fetched_values = self.generic_select(table='histo',
                                              columns=['histo_price'],
                                              where_clause=where_clause,
-                                             additional_clause=' AND histo.histo_date like "{}_%" ORDER BY histo_date DESC LIMIT 1'.format(self.today_date))
+                                             additional_clause=' AND histo.histo_date like "{}_%" ORDER BY histo_date DESC LIMIT 1'.format(self.get_today_date()))
         if fetched_values:
             assert (len(fetched_values) == 1)
             return float(fetched_values[0]['histo_price'])
@@ -113,6 +119,6 @@ class PriceDatabase:
         query = 'SELECT product_name, product_type, min(histo_price) AS histo_price, histo_date, source_name ' \
                 'FROM histo, product, source ' \
                 'WHERE source.source_id = histo.source_id AND product.product_id = histo.product_id AND histo.histo_date like "{}_%" ' \
-                'GROUP BY product_type'.format(self.today_date)
+                'GROUP BY product_type'.format(self.get_today_date())
         self.cursor.execute(query)
         return self.cursor.fetchall()

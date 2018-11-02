@@ -30,7 +30,7 @@ class BestDeal:
 
     def display_best_deals(self):
         cheapest_products = self.db.get_cheapest_by_product_type()
-        self.logger.info('Best deals for [{}]'.format(self.db.today_date))
+        self.logger.info('Best deals for [{}]'.format(self.db.get_today_date()))
         for product in cheapest_products:
             self.logger.info('Cheapest [{product_type:11}] [{histo_price:7}]€ [{product_name:115}] [{source_name:13}]'.format(**product))
 
