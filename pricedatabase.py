@@ -109,7 +109,9 @@ class PriceDatabase:
     
     def get_cheapest_price(self, product_id, source_id):
         """
-        SELECT min(histo_price), histo_date FROM histo WHERE product_id=1 AND source_id=1
+        SELECT min(histo_price), histo_date
+        FROM histo
+        WHERE product_id=1 AND source_id=1
         """
         where_clause = self.build_where_clause(columns=['product_id', 'source_id'], values=[product_id, source_id])
         fetched_values = self.generic_select(table='histo', columns=['min(histo_price)'], where_clause=where_clause)
