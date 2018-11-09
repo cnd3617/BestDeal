@@ -26,7 +26,7 @@ class BestDeal:
         for model in ['1070', '1080', '2060', '2070', '2080']:
             if model in product_name:
                 product_type = 'GTX ' + model
-        if product_type and (' ti' in product_name.lower() or 'ti ' in product_name.lower()):
+        if product_type and (' ti' in product_name.lower() or 'ti ' in product_name.lower() or '0ti' in product_name.lower()):
             product_type += ' Ti'
         return product_type
 
