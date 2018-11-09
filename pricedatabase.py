@@ -126,3 +126,19 @@ class PriceDatabase:
                 'GROUP BY product_type'.format(self.get_today_date())
         self.cursor.execute(query)
         return self.cursor.fetchall()
+
+    def get_time_series(self, source_id, product_type):
+        """
+        SELECT histo_price, histo_date, product.product_name
+        FROM histo, product
+        WHERE source_id = 1 AND product.product_id = histo.product_id AND product.product_type = 'GTX 1080'
+        ORDER BY product.product_id
+        """
+        query = 'SELECT histo_price, histo_date, product.product_name ' \
+                'FROM histo, product ' \
+                'WHERE source_id = {} AND product.product_id = histo.product_id AND product.product_type = "{}" ' \
+                'GROUP BY histo_date ' \
+                'ORDER BY histo.histo_date'.format(source_id, product_type)
+        print(query)
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
