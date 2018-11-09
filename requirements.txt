@@ -1,5 +1,5 @@
 beautifulsoup4==4.6.3
-requests==2.19.1
+requests==2.20.0
 dash==0.29.0
 dash-html-components==0.13.2
 dash-core-components==0.36.0
