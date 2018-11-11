@@ -143,7 +143,6 @@ class Cybertek:
         html = requests.get(url=site, headers=headers)
         soup = BeautifulSoup.BeautifulSoup(html.text, 'html.parser')
         deals = {}
-        print(soup.prettify())
         products = soup.find('div', attrs={'class': 'categorie-filtre lst_grid'})
         for item in products.findAll('div'):
             try:
@@ -162,6 +161,7 @@ class Cybertek:
 
 
 if __name__ == '__main__':
-    Cybertek.fetch_deals()
+    for deal in Cybertek.fetch_deals():
+        print(deal)
     # for case in ['      422.45   €*', '   ---   422,45   €*', '422€45']:
     #     print('[%s] -> [%s]' % (case, clean_price(case)))
