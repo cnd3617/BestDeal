@@ -108,9 +108,17 @@ class PriceDatabase:
         return None
 
     def get_cheapest_by_product_type(self):
+        """
+        SELECT product_name, product_type, MIN(histo_price) AS histo_price, histo_date, source_name
+        FROM histo, product, source
+        WHERE source.source_id = histo.source_id AND product.product_id = histo.product_id AND histo.histo_date LIKE "20181109_%"
+        GROUP BY product_type
+        """
         query = 'SELECT product_name, product_type, min(histo_price) AS histo_price, histo_date, source_name ' \
                 'FROM histo, product, source ' \
-                'WHERE source.source_id = histo.source_id AND product.product_id = histo.product_id AND histo.histo_date like "{}_%" ' \
+                'WHERE source.source_id = histo.source_id AND ' \
+                'product.product_id = histo.product_id AND ' \
+                'histo.histo_date like "{}_%" ' \
                 'GROUP BY product_type'.format(self.get_today_date())
         self.cursor.execute(query)
         return self.cursor.fetchall()
