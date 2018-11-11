@@ -11,6 +11,7 @@ class BestDeal:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.db = pricedatabase.PriceDatabase()
+        self.product_types = ['1070', '1080', '2060', '2070', '2080']
 
     def continuous_watch(self):
         wait_in_seconds = 900
@@ -20,12 +21,12 @@ class BestDeal:
             self.logger.info('Waiting [{}] seconds until next deal watch'.format(wait_in_seconds))
             time.sleep(wait_in_seconds)
 
-    @staticmethod
-    def extract_product_type(product_name):
+    def extract_product_type(self, product_name):
         product_type = None
-        for model in ['1070', '1080', '2060', '2070', '2080']:
+        for model in self.product_types:
             if model in product_name:
                 product_type = 'GTX ' + model
+                break
         if product_type and (' ti' in product_name.lower() or 'ti ' in product_name.lower() or '0ti' in product_name.lower()):
             product_type += ' Ti'
         return product_type
