@@ -143,14 +143,16 @@ class Cybertek:
         html = requests.get(url=site, headers=headers)
         soup = BeautifulSoup.BeautifulSoup(html.text, 'html.parser')
         deals = {}
+        print(soup.prettify())
         products = soup.find('div', attrs={'class': 'categorie-filtre lst_grid'})
         for item in products.findAll('div'):
             try:
                 fiche = item.find('a', attrs={'title': 'Voir la fiche produit'})
-                try:
-                    fiche.find('span', attrs={'class': 'prodfiche_dispo'}).decompose()
-                except:
-                    pass
+                for element_to_remove in ['prodfiche_destoc', 'prodfiche_dispo', 'prodfiche_nodispo', 'prodfiche_mag']:
+                    try:
+                        fiche.find('span', attrs={'class': element_to_remove}).decompose()
+                    except:
+                        pass
                 product_name = fiche.text
                 product_price = clean_price(item.find('div', attrs={'class': 'price_prod_resp'}).text)
                 deals[product_name] = product_price
