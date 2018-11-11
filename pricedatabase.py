@@ -169,6 +169,5 @@ class PriceDatabase:
                 'WHERE source_id = {} AND product.product_id = histo.product_id AND product.product_type = "{}" ' \
                 'GROUP BY histo_date ' \
                 'ORDER BY histo.histo_date'.format(source_id, product_type)
-        print(query)
         self.cursor.execute(query)
         return self.cursor.fetchall()
