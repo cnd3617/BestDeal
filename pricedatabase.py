@@ -18,10 +18,10 @@ class PriceDatabase:
     SOURCE = source_id, source_name
     HISTO = histo_id, product_id, source_id, histo_price, histo_date
     """
-    def __init__(self):
+    def __init__(self, filename='PricesHistorization.db'):
         self.logger = logging.getLogger(__name__)
         # isolation_level=None => auto commit
-        self.connection = sqlite3.connect(database='PricesHistorization.db', isolation_level=None)
+        self.connection = sqlite3.connect(database=filename, isolation_level=None)
         self.connection.row_factory = dict_factory
         self.cursor = self.connection.cursor()
         queries = [
