@@ -71,7 +71,7 @@ class BestDeal:
         if today_last_price is None or today_last_price != new_price:
             previous_price_info = 'Today last price [{:7}]'.format(today_last_price) if today_last_price else ''
             self.logger.info('New price for [{:115}] from [{:13}] : [{:7}] {}'.format(product_name, source_name, new_price, previous_price_info))
-            self.db.add_price(product_id, source_id, new_price)
+            self.db.add_price(product_id, source_id, new_price, self.db.get_today_datetime())
 
 
 if __name__ == '__main__':

@@ -82,10 +82,10 @@ class PriceDatabase:
             object_id = self.generic_insert(table, columns, values)
         return object_id
     
-    def add_price(self, product_id, source_id, histo_price):
+    def add_price(self, product_id, source_id, histo_price, histo_date):
         return self.generic_insert(table='histo',
                                    columns=['product_id', 'source_id', 'histo_price', 'histo_date'],
-                                   values=[product_id, source_id, histo_price, self.get_today_datetime()])
+                                   values=[product_id, source_id, histo_price, histo_date])
     
     @staticmethod
     def build_where_clause(columns, values):
