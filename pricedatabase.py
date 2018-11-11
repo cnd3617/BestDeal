@@ -106,24 +106,45 @@ class PriceDatabase:
             assert (len(fetched_values) == 1)
             return float(fetched_values[0]['histo_price'])
         return None
-    
-    def get_cheapest_price(self, product_id, source_id):
-        """
-        SELECT min(histo_price), histo_date
-        FROM histo
-        WHERE product_id=1 AND source_id=1
-        """
-        where_clause = self.build_where_clause(columns=['product_id', 'source_id'], values=[product_id, source_id])
-        fetched_values = self.generic_select(table='histo', columns=['min(histo_price)'], where_clause=where_clause)
-        if fetched_values:
-            return float(fetched_values[0]['min(histo_price)'])
-        return None
 
     def get_cheapest_by_product_type(self):
         query = 'SELECT product_name, product_type, min(histo_price) AS histo_price, histo_date, source_name ' \
                 'FROM histo, product, source ' \
                 'WHERE source.source_id = histo.source_id AND product.product_id = histo.product_id AND histo.histo_date like "{}_%" ' \
                 'GROUP BY product_type'.format(self.get_today_date())
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+
+    def get_cheapest_price(self, source_id, product_type, histo_date):
+        query = 'SELECT MIN(histo.histo_price) AS histo_price, histo.histo_date, product.product_name ' \
+                'FROM histo, product ' \
+                'WHERE histo.source_id = "{}" AND ' \
+                'product.product_id = histo.product_id AND ' \
+                'product.product_type = "{}" AND ' \
+                'histo.histo_date like "{}_%"'.format(source_id, product_type, histo_date)
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+
+    def get_cheapest_price_from_all_sources(self, product_type, histo_date):
+        query = 'SELECT MIN(histo.histo_price) AS histo_price, ' \
+                'histo.histo_date, ' \
+                'product.product_name, ' \
+                'source.source_name ' \
+                'FROM histo, product, source ' \
+                'WHERE product.product_id = histo.product_id AND ' \
+                'histo.source_id = source.source_id AND ' \
+                'product.product_type = "{}" AND ' \
+                'histo.histo_date like "{}_%"'.format(product_type, histo_date)
+        #print(query)
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+
+    def get_source_identifiers(self):
+        """
+        SELECT source_id, source_name
+        FROM source
+        """
+        query = 'SELECT source_id, source_name FROM source'
         self.cursor.execute(query)
         return self.cursor.fetchall()
 

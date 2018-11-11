@@ -5,6 +5,7 @@ import pricedatabase
 import logging
 import dealscrappers
 import time
+import itertools
 
 
 class BestDeal:
@@ -32,6 +33,16 @@ class BestDeal:
         return product_type
 
     def display_best_deals(self):
+        # histo_date = self.db.get_today_date()
+        # self.logger.info('Best deals for [{}]'.format(histo_date))
+        # product_items = [['GTX'], self.product_types, ['', 'Ti']]
+        # for element in itertools.product(*product_items):
+        #     product_type = ' '.join(element).strip()
+        #     cheapest_product = self.db.get_cheapest_price_from_all_sources(product_type=product_type, histo_date=histo_date)
+        #     if cheapest_product[0]['product_name']:
+        #         cheapest_product[0]['product_type'] = product_type
+        #         self.logger.info(
+        #             'Cheapest [{product_type:11}] [{histo_price:7}]€ [{product_name:115}] [{source_name:13}]'.format(**cheapest_product[0]))
         cheapest_products = self.db.get_cheapest_by_product_type()
         self.logger.info('Best deals for [{}]'.format(self.db.get_today_date()))
         for product in cheapest_products:
