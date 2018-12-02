@@ -170,3 +170,35 @@ class PriceDatabase:
                 'ORDER BY histo.histo_date'.format(source_id, product_type)
         self.cursor.execute(query)
         return self.cursor.fetchall()
+
+    def get_minimum_price(self, source_id, product_type, histo_date):
+        """
+        SELECT MIN(histo_price) AS histo_price, histo_date, product.product_name
+        FROM histo, product
+        WHERE source_id = 1 AND
+        product.product_id = histo.product_id AND
+        product.product_type = 'GTX 1080' AND
+        histo.histo_date like '20181123_%'
+        """
+        query = 'SELECT MIN(histo_price) AS histo_price, histo_date, product.product_name ' \
+                'FROM histo, product ' \
+                'WHERE source_id = {} AND ' \
+                'product.product_id = histo.product_id AND ' \
+                'product.product_type = "{}" AND ' \
+                'histo.histo_date like "{}_%" ' \
+                'ORDER BY histo.histo_date'.format(source_id, product_type, histo_date)
+        self.cursor.execute(query)
+        return self.cursor.fetchone()
+
+    def get_all_prices(self):
+        query = 'SELECT * ' \
+                'FROM histo ' \
+                'ORDER BY histo.histo_date'
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+
+    def get_all_products(self):
+        query = 'SELECT * ' \
+                'FROM product '
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
