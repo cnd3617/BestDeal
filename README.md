@@ -7,6 +7,12 @@ Easily compare your most wanted products among your favorite vendors to buy chea
 
 BestDeal provides you a backend and a frontend to decide what's the best moment to buy.
 
+Usage
+-------------
+1. Run bestdeal.py to feed price database.
+2. Run frontend.py to run a local web server displaying prices graph.
+3. Analyze and profit !
+
 Backend
 -------------
 Backend is composed of two main modules : deals scrappers and price database.
