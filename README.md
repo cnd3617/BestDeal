@@ -7,6 +7,15 @@ Easily compare your most wanted products among your favorite vendors to buy chea
 
 BestDeal provides you a backend and a frontend to decide what's the best moment to buy.
 
+Requirements
+-------------
+
+[Python 3](https://www.python.org/downloads/)
+
+[External modules (requirements)](requirements.txt)
+
+[How to install requirements with pip ?](https://stackoverflow.com/a/39537053/5037799)
+
 Usage
 -------------
 1. Run bestdeal.py to feed price database.
