@@ -94,7 +94,7 @@ class TopAchat:
     @staticmethod
     def fetch_deals():
         deals = {}
-        with urllib.request.urlopen('https://bit.ly/2yejyJ4') as response:
+        with urllib.request.urlopen('https://bit.ly/2Pbt1Xa') as response:
             html = response.read()
             soup = BeautifulSoup.BeautifulSoup(html, 'html.parser')
             for item in soup.findAll('article', attrs={'class': 'grille-produit'}):
