@@ -50,7 +50,6 @@ class BestDeal:
 
     def record_best_deals(self):
         sources = [dealscrappers.TopAchat,
-                   dealscrappers.CDiscount,
                    dealscrappers.GrosBill,
                    dealscrappers.RueDuCommerce,
                    dealscrappers.Cybertek]
