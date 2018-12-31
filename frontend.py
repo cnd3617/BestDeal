@@ -30,8 +30,9 @@ def build_graph_by_product_type(bd, product_type, colors):
 
     no_data = True
     data = []
-    start_date = date(year=2018, month=1, day=1)
-    end_date = date(year=2018, month=12, day=31)
+    year = 2018
+    start_date = date(year=year, month=1, day=1)
+    end_date = date(year=year, month=12, day=31)
     for source in bd.db.get_source_identifiers():
         x = []
         y = []
@@ -39,26 +40,39 @@ def build_graph_by_product_type(bd, product_type, colors):
             current_date = single_date.strftime('%Y%m%d')
             minimum_record = bd.db.get_minimum_price(source['source_id'], product_type, current_date)
             if minimum_record['histo_price']:
-                x.append(current_date)
+                x.append(single_date)
                 y.append(minimum_record['histo_price'])
         if x and y:
             no_data = False
-            data.append(plotly.graph_objs.Scatter(name=source['source_name'], x=x, y=y, connectgaps=True))
+            data.append(plotly.graph_objs.Scatter(name=source['source_name'], x=x, y=y, connectgaps=False))
 
     if no_data:
         return []
+
+    labels = ['End of Q1', 'End of Q2', 'End of Q3', 'End of Q4']
+    tickvals = [x % year for x in ['%s-04-01', '%s-07-01', '%s-10-01', '%s-12-31']]
+
+    layout = plotly.graph_objs.Layout(
+        title='{} Quarterly GPU prices'.format(year),
+        xaxis=plotly.graph_objs.layout.XAxis(
+            ticktext=labels,
+            tickvals=tickvals
+        ),
+        yaxis2=dict(
+            overlaying='y',
+            side='right',
+            showgrid=False,
+        ),
+        plot_bgcolor=colors['background'],
+        paper_bgcolor=colors['background'],
+        font={'color': colors['text']}
+    )
 
     graph = dcc.Graph(
         id='{}_graph'.format(product_type),
         figure={
             'data': data,
-            'layout': {
-                'plot_bgcolor': colors['background'],
-                'paper_bgcolor': colors['background'],
-                'font': {
-                    'color': colors['text']
-                }
-            }
+            'layout': layout
         }
     )
     return [title, description, graph]
