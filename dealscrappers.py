@@ -48,7 +48,7 @@ class GrosBill:
 
     @staticmethod
     def fetch_deals():
-        site = 'https://bit.ly/2yEd9WQ'
+        site = 'https://bit.ly/2CDJmkf'
         html = requests.get(url=site, headers=headers)
         soup = BeautifulSoup.BeautifulSoup(html.text, 'html.parser')
         deals = {}
@@ -57,8 +57,8 @@ class GrosBill:
                 product_name = product.find('div', attrs={'class': 'product_description'}).find('a').text
                 product_price = clean_price(product.find('td', attrs={'class': 'btn_price_wrapper'}).find('b').text)
                 deals[product_name] = product_price
-            except Exception as exception:
-                print(exception)
+            except:
+                pass
         return deals
 
 
