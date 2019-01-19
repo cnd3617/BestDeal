@@ -6,6 +6,9 @@ from datetime import datetime, timezone
 
 
 def dict_factory(cursor, row):
+    """
+    Useful to generate dict from queries (instead of tuples)
+    """
     d = {}
     for idx, col in enumerate(cursor.description):
         d[col[0]] = row[idx]
