@@ -5,57 +5,53 @@ import pricedatabase
 import logging
 import dealscrappers
 import time
-import itertools
 
 
 class BestDeal:
     def __init__(self):
+        self.wait_in_seconds = 900
         self.logger = logging.getLogger(__name__)
         self.db = pricedatabase.PriceDatabase()
-        self.product_types = ['1070', '1080', '2060', '2070', '2080']
+        self.product_types = ['1060', '1070', '1080', '2060', '2070', '2080']
 
     def continuous_watch(self):
-        wait_in_seconds = 900
         while True:
-            self.record_best_deals()
-            self.display_best_deals()
-            self.logger.info('Waiting [{}] seconds until next deal watch'.format(wait_in_seconds))
-            time.sleep(wait_in_seconds)
+            try:
+                self.scrap_and_store()
+                self.display_best_deals()
+            except Exception as exception:
+                self.logger.warning(exception)
+            self.logger.info('Waiting [{}] seconds until next deal watch'.format(self.wait_in_seconds))
+            time.sleep(self.wait_in_seconds)
 
     def extract_product_type(self, product_name):
         product_type = None
         for model in self.product_types:
             if model in product_name:
-                product_type = 'GTX ' + model
+                product_type = model
                 break
         if product_type and (' ti' in product_name.lower() or 'ti ' in product_name.lower() or '0ti' in product_name.lower()):
             product_type += ' Ti'
         return product_type
 
     def display_best_deals(self):
-        # histo_date = self.db.get_today_date()
-        # self.logger.info('Best deals for [{}]'.format(histo_date))
-        # product_items = [['GTX'], self.product_types, ['', 'Ti']]
-        # for element in itertools.product(*product_items):
-        #     product_type = ' '.join(element).strip()
-        #     cheapest_product = self.db.get_cheapest_price_from_all_sources(product_type=product_type, histo_date=histo_date)
-        #     if cheapest_product[0]['product_name']:
-        #         cheapest_product[0]['product_type'] = product_type
-        #         self.logger.info(
-        #             'Cheapest [{product_type:11}] [{histo_price:7}]€ [{product_name:115}] [{source_name:13}]'.format(**cheapest_product[0]))
         cheapest_products = self.db.get_cheapest_by_product_type()
         self.logger.info('Best deals for [{}]'.format(self.db.get_today_date()))
         for product in cheapest_products:
-            self.logger.info('Cheapest [{product_type:11}] [{histo_price:7}]€ [{product_name:115}] [{source_name:13}]'.format(**product))
+            self.logger.info('Cheapest [{product_type:7}] [{histo_price:7}]€ [{product_name:115}] [{source_name:13}]'.format(**product))
 
-    def record_best_deals(self):
+    def scrap_and_store(self):
         sources = [dealscrappers.TopAchat,
                    dealscrappers.GrosBill,
                    dealscrappers.RueDuCommerce,
                    dealscrappers.Cybertek]
         for source in sources:
             self.logger.info('Fetch deals from [{}]'.format(source.__name__))
-            deals = source.fetch_deals()
+            try:
+                deals = source.fetch_deals()
+            except Exception as exception:
+                self.logger.warning('Failed to fetch deals for [{}]. Reason [{}]'.format(source.__name__, exception))
+                continue
             for product_name, product_price in deals.items():
                 product_type = self.extract_product_type(product_name)
                 if product_type:
@@ -78,7 +74,5 @@ if __name__ == '__main__':
                         level=logging.INFO,
                         format='%(asctime)s.%(msecs)03d %(levelname)-8s %(message)s',
                         datefmt='%d/%m/%Y %H:%M:%S %p')
-
     bd = BestDeal()
     bd.continuous_watch()
-    # bd.display_best_deals()
