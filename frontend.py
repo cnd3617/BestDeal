@@ -54,7 +54,7 @@ class Frontend:
                 data.append(plotly.graph_objs.Scatter(name=source['source_name'], x=x, y=y, connectgaps=False))
 
         if no_data:
-            self.logger.warning('No data available for [{}]'.format(product_type))
+            self.logger.warning('No data available for model [{}] from any source'.format(product_type))
             return None
 
         labels = ['End of Q1', 'End of Q2', 'End of Q3', 'End of Q4']
