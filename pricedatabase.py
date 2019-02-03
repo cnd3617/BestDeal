@@ -190,6 +190,7 @@ class PriceDatabase:
                 'product.product_type = "{}" AND ' \
                 'histo.histo_date like "{}_%" ' \
                 'ORDER BY histo.histo_date'.format(source_id, product_type, histo_date)
+        self.logger.debug('Query [{}]'.format(query))
         self.cursor.execute(query)
         return self.cursor.fetchone()
 
