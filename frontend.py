@@ -4,8 +4,7 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from datetime import timedelta, date
-import sys
-import logging
+from loguru import logger
 import plotly
 import bestdeal
 import itertools
@@ -13,11 +12,10 @@ import itertools
 
 class Frontend:
     def __init__(self):
-        self.logger = logging.getLogger(__name__)
         self.year = 2019
         self.start_date = date(year=self.year, month=1, day=1)
         self.end_date = date(year=self.year, month=12, day=31)
-        self.logger.info('Display prices from [{}] to [{}]'.format(self.start_date, self.end_date))
+        logger.info('Display prices from [{}] to [{}]'.format(self.start_date, self.end_date))
 
     @staticmethod
     def daterange(start_date, end_date):
@@ -54,7 +52,7 @@ class Frontend:
                 data.append(plotly.graph_objs.Scatter(name=source['source_name'], x=x, y=y, connectgaps=False))
 
         if no_data:
-            self.logger.warning('No data available for model [{}] from any source'.format(product_type))
+            logger.warning('No data available for model [{}] from any source'.format(product_type))
             return None
 
         labels = ['End of Q1', 'End of Q2', 'End of Q3', 'End of Q4']
@@ -110,9 +108,5 @@ class Frontend:
 
 
 if __name__ == '__main__':
-    logging.basicConfig(stream=sys.stdout,
-                        level=logging.INFO,
-                        format='%(asctime)s.%(msecs)03d %(levelname)-8s %(message)s',
-                        datefmt='%d/%m/%Y %H:%M:%S %p')
     app = Frontend().build_website()
     app.run_server(debug=False)

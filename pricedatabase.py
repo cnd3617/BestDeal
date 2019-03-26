@@ -1,7 +1,7 @@
 # coding: utf-8
 
-import logging
 import sqlite3
+from loguru import logger
 from datetime import datetime, timezone
 
 
@@ -22,7 +22,6 @@ class PriceDatabase:
     HISTO = histo_id, product_id, source_id, histo_price, histo_date
     """
     def __init__(self, filename='PricesHistorization.db'):
-        self.logger = logging.getLogger(__name__)
         # isolation_level=None => auto commit
         self.connection = sqlite3.connect(database=filename, isolation_level=None)
         self.connection.row_factory = dict_factory
@@ -55,17 +54,17 @@ class PriceDatabase:
 
     def generic_insert(self, table, columns, values):
         query = 'INSERT INTO {} ({}) VALUES({})'.format(table, ','.join(columns), ','.join(['?']*len(values)))
-        self.logger.debug('Query [{}]'.format(query))
+        logger.debug('Query [{}]'.format(query))
         self.cursor.execute(query, tuple(values,))
         return self.cursor.lastrowid
 
     def generic_select(self, table, columns, where_clause, additional_clause=''):
         selected_columns = ','.join(columns) if columns else '*'
         query = 'SELECT {} FROM {} where {} {}'.format(selected_columns, table, where_clause, additional_clause)
-        self.logger.debug('Query [{}]'.format(query))
+        logger.debug('Query [{}]'.format(query))
         self.cursor.execute(query)
         fetched_values = self.cursor.fetchall()
-        self.logger.debug('Fetched values [{}]'.format(fetched_values))
+        logger.debug('Fetched values [{}]'.format(fetched_values))
         return fetched_values
     
     def get_object_id(self, table, columns, where_clause):
@@ -81,7 +80,7 @@ class PriceDatabase:
         where_clause = self.build_where_clause(columns, values)
         object_id = self.get_object_id(table, ['{}_id'.format(table)], where_clause)
         if object_id is None:
-            self.logger.info('New [{}]: {}'.format(table, values))
+            logger.info('New [{}]: {}'.format(table, values))
             object_id = self.generic_insert(table, columns, values)
         return object_id
     
@@ -190,7 +189,7 @@ class PriceDatabase:
                 'product.product_type = "{}" AND ' \
                 'histo.histo_date like "{}_%" ' \
                 'ORDER BY histo.histo_date'.format(source_id, product_type, histo_date)
-        self.logger.debug('Query [{}]'.format(query))
+        logger.debug('Query [{}]'.format(query))
         self.cursor.execute(query)
         return self.cursor.fetchone()
 
