@@ -12,7 +12,7 @@ class BestDeal:
         self.wait_in_seconds = 900
         self.logger = logging.getLogger(__name__)
         self.db = pricedatabase.PriceDatabase()
-        self.product_types = ['1060', '1070', '1080', '2060', '2070', '2080']
+        self.product_types = ['1060', '1660', '1070', '1080', '2060', '2070', '2080']
 
     def continuous_watch(self):
         while True:

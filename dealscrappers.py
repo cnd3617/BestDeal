@@ -27,8 +27,11 @@ class RueDuCommerce:
     @staticmethod
     def fetch_deals():
         sites = [
-            'https://bit.ly/2ApT5JK',  # GTX 1080 Ti
-            'https://bit.ly/2OMZJ5E',  # RTX 2080
+            'http://bit.do/eL5iy',     # GTX 1060 6GB
+            'http://bit.do/eL5iL',     # GTX 1660
+            'http://bit.do/eL5iW',     # GTX 1660 Ti
+            'http://bit.do/eL5gy',     # RTX 2070
+            'http://bit.do/eL5gP',     # RTX 2080
             'https://bit.ly/2CCjB4b',  # RTX 2080 Ti
         ]
         deals = {}
@@ -48,17 +51,24 @@ class GrosBill:
 
     @staticmethod
     def fetch_deals():
-        site = 'https://bit.ly/2CDJmkf'
-        html = requests.get(url=site, headers=headers)
-        soup = BeautifulSoup.BeautifulSoup(html.text, 'html.parser')
+        sites = [
+            'http://bit.do/eL5j9',  # GTX 1060 6GB
+            'http://bit.do/eL5kj',  # GTX 1660 Ti
+            'http://bit.do/eL5kA',  # RTX 2070
+            'http://bit.do/eL5kH',  # RTX 2080
+            'http://bit.do/eL5kP',  # RTX 2080 Ti
+        ]
         deals = {}
-        for product in soup.find('table', attrs={'id': 'listing_mode_display'}).findAll('tr'):
-            try:
-                product_name = product.find('div', attrs={'class': 'product_description'}).find('a').text
-                product_price = clean_price(product.find('td', attrs={'class': 'btn_price_wrapper'}).find('b').text)
-                deals[product_name] = product_price
-            except:
-                pass
+        for site in sites:
+            html = requests.get(url=site, headers=headers)
+            soup = BeautifulSoup.BeautifulSoup(html.text, 'html.parser')
+            for product in soup.find('table', attrs={'id': 'listing_mode_display'}).findAll('tr'):
+                try:
+                    product_name = product.find('div', attrs={'class': 'product_description'}).find('a').text
+                    product_price = clean_price(product.find('td', attrs={'class': 'btn_price_wrapper'}).find('b').text)
+                    deals[product_name] = product_price
+                except:
+                    pass
         return deals
 
 
@@ -68,10 +78,19 @@ class TopAchat:
 
     @staticmethod
     def fetch_deals():
+        sites = [
+            'http://bit.do/eL5BS',  # GTX 1060 6GB
+            'http://bit.do/eL5B9',  # GTX 1660
+            'http://bit.do/eL5Cr',  # GTX 1660 Ti
+            'http://bit.do/eL5Cz',  # RTX 2060
+            'http://bit.do/eL5CG',  # RTX 2070
+            'http://bit.do/eL5CQ',  # RTX 2080
+            'http://bit.do/eL5CU',  # RTX 2080 Ti
+        ]
         deals = {}
-        with urllib.request.urlopen('https://bit.ly/2Pbt1Xa') as response:
-            html = response.read()
-            soup = BeautifulSoup.BeautifulSoup(html, 'html.parser')
+        for site in sites:
+            html = requests.get(url=site, headers=headers)
+            soup = BeautifulSoup.BeautifulSoup(html.text, 'html.parser')
             for item in soup.findAll('article', attrs={'class': 'grille-produit'}):
                 product_name = item.find('h3').text
                 product_price = clean_price(item.find('div', attrs={'itemprop': 'price'}).text)
@@ -114,24 +133,34 @@ class Cybertek:
 
     @staticmethod
     def fetch_deals():
-        site = 'https://bit.ly/2PJsdtN'
-        html = requests.get(url=site, headers=headers)
-        soup = BeautifulSoup.BeautifulSoup(html.text, 'html.parser')
+        sites = [
+            'http://bit.do/eL5BS',  # GTX 1060 6GB
+            'http://bit.do/eL5B9',  # GTX 1660
+            'http://bit.do/eL5Cr',  # GTX 1660 Ti
+            'http://bit.do/eL5Cz',  # RTX 2060
+            'http://bit.do/eL5CG',  # RTX 2070
+            'http://bit.do/eL5CQ',  # RTX 2080
+            'http://bit.do/eL5CU',  # RTX 2080 Ti
+        ]
         deals = {}
-        products = soup.find('div', attrs={'class': 'categorie-filtre lst_grid'})
-        for item in products.findAll('div'):
-            try:
-                fiche = item.find('a', attrs={'title': 'Voir la fiche produit'})
-                for element_to_remove in ['prodfiche_destoc', 'prodfiche_dispo', 'prodfiche_nodispo', 'prodfiche_mag']:
-                    try:
-                        fiche.find('span', attrs={'class': element_to_remove}).decompose()
-                    except:
-                        pass
-                product_name = fiche.text
-                product_price = clean_price(item.find('div', attrs={'class': 'price_prod_resp'}).text)
-                deals[product_name] = product_price
-            except:
-                pass
+        for site in sites:
+            html = requests.get(url=site, headers=headers)
+            soup = BeautifulSoup.BeautifulSoup(html.text, 'html.parser')
+            products = soup.find('div', attrs={'class': 'categorie-filtre lst_grid'})
+            for item in products.findAll('div'):
+                try:
+                    fiche = item.find('a', attrs={'title': 'Voir la fiche produit'})
+                    for element_to_remove in ['prodfiche_destoc', 'prodfiche_dispo', 'prodfiche_nodispo',
+                                              'prodfiche_mag']:
+                        try:
+                            fiche.find('span', attrs={'class': element_to_remove}).decompose()
+                        except:
+                            pass
+                    product_name = fiche.text
+                    product_price = clean_price(item.find('div', attrs={'class': 'price_prod_resp'}).text)
+                    deals[product_name] = product_price
+                except:
+                    pass
         return deals
 
 
