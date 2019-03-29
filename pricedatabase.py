@@ -54,19 +54,19 @@ class PriceDatabase:
 
     def generic_insert(self, table, columns, values):
         query = 'INSERT INTO {} ({}) VALUES({})'.format(table, ','.join(columns), ','.join(['?']*len(values)))
-        logger.debug('Query [{}]'.format(query))
+        logger.trace('Query [{}]'.format(query))
         self.cursor.execute(query, tuple(values,))
         return self.cursor.lastrowid
 
     def generic_select(self, table, columns, where_clause, additional_clause=''):
         selected_columns = ','.join(columns) if columns else '*'
         query = 'SELECT {} FROM {} where {} {}'.format(selected_columns, table, where_clause, additional_clause)
-        logger.debug('Query [{}]'.format(query))
+        logger.trace('Query [{}]'.format(query))
         self.cursor.execute(query)
         fetched_values = self.cursor.fetchall()
-        logger.debug('Fetched values [{}]'.format(fetched_values))
+        logger.trace('Fetched values [{}]'.format(fetched_values))
         return fetched_values
-    
+
     def get_object_id(self, table, columns, where_clause):
         fetched_values = self.generic_select(table, columns, where_clause)
         # fetched_values should be a list containing 1 dict
@@ -75,7 +75,7 @@ class PriceDatabase:
                 if 'id' in key:
                     return fetched_values[0][key]
         return None
-    
+
     def insert_if_necessary(self, table, columns, values):
         where_clause = self.build_where_clause(columns, values)
         object_id = self.get_object_id(table, ['{}_id'.format(table)], where_clause)
@@ -83,18 +83,18 @@ class PriceDatabase:
             logger.info('New [{}]: {}'.format(table, values))
             object_id = self.generic_insert(table, columns, values)
         return object_id
-    
+
     def add_price(self, product_id, source_id, histo_price, histo_date):
         return self.generic_insert(table='histo',
                                    columns=['product_id', 'source_id', 'histo_price', 'histo_date'],
                                    values=[product_id, source_id, histo_price, histo_date])
-    
+
     @staticmethod
     def build_where_clause(columns, values):
         enclosed_values = ['"{}"'.format(value) for value in values]
         where_clause = ' and '.join(['='.join(t) for t in zip(columns, enclosed_values)])
         return where_clause
-    
+
     def get_last_price_for_today(self, product_id, source_id):
         """
         SELECT histo_price, histo_date FROM histo WHERE product_id=45 AND source_id=2 AND histo.histo_date like '20181013_%' ORDER BY histo_date DESC LIMIT 1
@@ -189,7 +189,7 @@ class PriceDatabase:
                 'product.product_type = "{}" AND ' \
                 'histo.histo_date like "{}_%" ' \
                 'ORDER BY histo.histo_date'.format(source_id, product_type, histo_date)
-        logger.debug('Query [{}]'.format(query))
+        logger.trace('Query [{}]'.format(query))
         self.cursor.execute(query)
         return self.cursor.fetchone()
 

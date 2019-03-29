@@ -1,0 +1,18 @@
+# coding: utf-8
+
+import unittest
+from vendor import Vendor
+
+
+class TestCleanPrice(unittest.TestCase):
+    def setUp(self):
+        self.reference_price = '422.45'
+
+    def test_case_1(self):
+        self.assertEqual(self.reference_price, Vendor.clean_price('      422.45   €*'))
+
+    def test_case_2(self):
+        self.assertEqual(self.reference_price, Vendor.clean_price('   ---   422,45   €*'))
+
+    def test_case_3(self):
+        self.assertEqual(self.reference_price, Vendor.clean_price('422€45'))
