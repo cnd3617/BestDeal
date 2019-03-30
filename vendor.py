@@ -30,6 +30,7 @@ class Vendor:
         """
         Clean the price to facilitate comparisons
         """
+        dirty_price = dirty_price.replace(' ', '')
         m = re.search('([0-9]+)[€.,]+([0-9]+)', dirty_price)
         return '{}.{}'.format(m.group(1), m.group(2))
 
