@@ -6,6 +6,7 @@ from topachat import TopAchat
 from grosbill import GrosBill
 from rueducommerce import RueDuCommerce
 from cybertek import Cybertek
+from ldlc import LDLC
 from loguru import logger
 
 
@@ -45,7 +46,8 @@ class BestDeal:
         sources = [TopAchat(),
                    GrosBill(),
                    RueDuCommerce(),
-                   Cybertek()]
+                   Cybertek(),
+                   LDLC()]
         for source in sources:
             logger.info('Fetch deals from [{}]'.format(source.source_name))
             try:
