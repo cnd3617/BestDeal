@@ -16,3 +16,6 @@ class TestCleanPrice(unittest.TestCase):
 
     def test_case_3(self):
         self.assertEqual(self.reference_price, Vendor.clean_price('422€45'))
+
+    def test_case_4(self):
+        self.assertEqual(self.reference_price, Vendor.clean_price('4 22€45'))
