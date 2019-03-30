@@ -6,11 +6,11 @@ from vendor import Vendor
 class GrosBill(Vendor):
     def __init__(self):
         sites = [
-            'http://bit.do/eL5j9',  # GTX 1060 6GB
-            'http://bit.do/eL5kj',  # GTX 1660 Ti
-            'http://bit.do/eL5kA',  # RTX 2070
-            'http://bit.do/eL5kH',  # RTX 2080
-            'http://bit.do/eL5kP',  # RTX 2080 Ti
+            'https://bit.ly/2FBdiOk',  # GTX 1060 6GB
+            'https://bit.ly/2uzeM6r',  # GTX 1660 Ti
+            'https://bit.ly/2uAtoCD',  # RTX 2070
+            'https://bit.ly/2I45eIH',  # RTX 2080
+            'https://bit.ly/2YCFvwU',  # RTX 2080 Ti
         ]
         super().__init__(source_name=__class__.__name__, sites=sites)
 

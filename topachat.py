@@ -6,13 +6,13 @@ from vendor import Vendor
 class TopAchat(Vendor):
     def __init__(self):
         sites = [
-            'http://bit.do/eL5BS',  # GTX 1060 6GB
-            'http://bit.do/eL5B9',  # GTX 1660
-            'http://bit.do/eL5Cr',  # GTX 1660 Ti
-            'http://bit.do/eL5Cz',  # RTX 2060
-            'http://bit.do/eL5CG',  # RTX 2070
-            'http://bit.do/eL5CQ',  # RTX 2080
-            'http://bit.do/eL5CU',  # RTX 2080 Ti
+            'https://bit.ly/2uBlMQz',  # GTX 1060 6GB
+            'https://bit.ly/2FLwEld',  # GTX 1660
+            'https://bit.ly/2uzOWiG',  # GTX 1660 Ti
+            'https://bit.ly/2CMzlkr',  # RTX 2060
+            'https://bit.ly/2FMNlg0',  # RTX 2070
+            'https://bit.ly/2JQck65',  # RTX 2080
+            'https://bit.ly/2TG5EXT',  # RTX 2080 Ti
         ]
         super().__init__(source_name=__class__.__name__, sites=sites)
 
