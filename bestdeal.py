@@ -33,7 +33,9 @@ class BestDeal:
                 product_type = model
                 break
         if product_type and (' ti' in product_name.lower() or 'ti ' in product_name.lower() or '0ti' in product_name.lower()):
-            product_type += ' Ti'
+            # Product 1060 Ti does not exist...
+            if product_type != '1060':
+                product_type += ' Ti'
         return product_type
 
     def display_best_deals(self):
