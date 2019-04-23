@@ -1,6 +1,7 @@
 # coding: utf-8
 
 from vendor import Vendor
+from loguru import logger
 
 
 class GrosBill(Vendor):
@@ -22,3 +23,11 @@ class GrosBill(Vendor):
                 deals[product_name] = product_price
             except:
                 pass
+
+
+if __name__ == '__main__':
+    vendor = GrosBill()
+    fetched_deals = vendor.fetch_deals()
+    for deal in fetched_deals:
+        logger.info(deal)
+    logger.info('Fetched deals count [{}]'.format(len(fetched_deals)))

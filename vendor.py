@@ -3,6 +3,7 @@
 import re
 import bs4
 import requests
+from loguru import logger
 
 
 class Vendor:
@@ -22,7 +23,13 @@ class Vendor:
         for site in self.sites:
             html = requests.get(url=site, headers=self.headers)
             soup = bs4.BeautifulSoup(html.text, 'html.parser')
+            current_deal_count = len(deals)
             self.enrich_deals_from_soup(soup, deals)
+            fetched_deals_count = len(deals) - current_deal_count
+            if not fetched_deals_count:
+                logger.warning('Site [{}] from [{}] fetched 0 deal...'.format(site, self.source_name))
+            else:
+                logger.info('Site [{}] from [{}] fetched [{}] deals'.format(site, self.source_name, fetched_deals_count))
         return deals
 
     @staticmethod

@@ -1,34 +1,48 @@
 # coding: utf-8
 
+import re
 from vendor import Vendor
+from loguru import logger
 
 
 class Cybertek(Vendor):
     def __init__(self):
         sites = [
-            'http://bit.do/eL5BS',  # GTX 1060 6GB
-            'http://bit.do/eL5B9',  # GTX 1660
-            'http://bit.do/eL5Cr',  # GTX 1660 Ti
-            'http://bit.do/eL5Cz',  # RTX 2060
-            'http://bit.do/eL5CG',  # RTX 2070
-            'http://bit.do/eL5CQ',  # RTX 2080
-            'http://bit.do/eL5CU',  # RTX 2080 Ti
+            'https://bit.ly/2OyuckC',  # GTX 1060 6GB
+            'https://bit.ly/2uL1bJH',  # GTX 1660
+            'https://bit.ly/2YHhJjx',  # GTX 1660 Ti
+            'https://bit.ly/2OITRYd',  # RTX 2060
+            'https://bit.ly/2FElIo5',  # RTX 2070
+            'https://bit.ly/2TIQ4uM',  # RTX 2080
+            'https://bit.ly/2JSMgaD',  # RTX 2080 Ti
         ]
         super().__init__(source_name=__class__.__name__, sites=sites)
 
+    @staticmethod
+    def remove_garbage_characters(string):
+        return string.replace('\r', '').replace('\n', '').replace(' ', '').replace('\t', '')
+
+    @staticmethod
+    def remove_all_span(tag):
+        for span_tag in tag.findAll('span'):
+            span_tag.replace_with('')
+
     def enrich_deals_from_soup(self, soup, deals):
-        products = soup.find('div', attrs={'class': 'categorie-filtre lst_grid'})
-        for item in products.findAll('div'):
-            try:
-                fiche = item.find('a', attrs={'title': 'Voir la fiche produit'})
-                for element_to_remove in ['prodfiche_destoc', 'prodfiche_dispo', 'prodfiche_nodispo',
-                                          'prodfiche_mag']:
-                    try:
-                        fiche.find('span', attrs={'class': element_to_remove}).decompose()
-                    except:
-                        pass
-                product_name = fiche.text
-                product_price = self.clean_price(item.find('div', attrs={'class': 'price_prod_resp'}).text)
-                deals[product_name] = product_price
-            except:
-                pass
+        # logger.info(soup.prettify())
+        products = soup.findAll('div', attrs={'class': re.compile('ppp-*')})
+        for product in products:
+            tag = product.find('div', attrs={'class': re.compile('product*')})
+            brand = tag.find('span', attrs={'class': 'marque'}).text
+            self.remove_all_span(tag)
+            second_part = tag.find('a', attrs={'class': 'prod_txt_left'}).text
+            product_name = brand + self.remove_garbage_characters(second_part)
+            product_price = self.clean_price(product.find('div', attrs={'class': 'price_prod_resp'}).text)
+            deals[product_name] = product_price
+
+
+if __name__ == '__main__':
+    vendor = Cybertek()
+    fetched_deals = vendor.fetch_deals()
+    for deal in fetched_deals:
+        logger.info(deal)
+    logger.info('Fetched deals count [{}]'.format(len(fetched_deals)))

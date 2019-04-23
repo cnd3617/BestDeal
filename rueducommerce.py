@@ -1,16 +1,17 @@
 # coding: utf-8
 
 from vendor import Vendor
+from loguru import logger
 
 
 class RueDuCommerce(Vendor):
     def __init__(self):
         sites = [
-            'http://bit.do/eL5iy',     # GTX 1060 6GB
-            'http://bit.do/eL5iL',     # GTX 1660
-            'http://bit.do/eL5iW',     # GTX 1660 Ti
-            'http://bit.do/eL5gy',     # RTX 2070
-            'http://bit.do/eL5gP',     # RTX 2080
+            'https://bit.ly/2V4ev77',  # GTX 1060 6GB
+            'https://bit.ly/2COCaRY',  # GTX 1660
+            'https://bit.ly/2YAYzvs',  # GTX 1660 Ti
+            'https://bit.ly/2UsWLWl',  # RTX 2070
+            'https://bit.ly/2U5ZHsw',  # RTX 2080
             'https://bit.ly/2CCjB4b',  # RTX 2080 Ti
         ]
         super().__init__(source_name=__class__.__name__, sites=sites)
@@ -20,3 +21,11 @@ class RueDuCommerce(Vendor):
             product_name = item.find('div', attrs={'class': 'summary'}).text
             product_price = self.clean_price(item.find('div', attrs={'class': 'price'}).text)
             deals[product_name] = product_price
+
+
+if __name__ == '__main__':
+    vendor = RueDuCommerce()
+    fetched_deals = vendor.fetch_deals()
+    for deal in fetched_deals:
+        logger.info(deal)
+    logger.info('Fetched deals count [{}]'.format(len(fetched_deals)))
