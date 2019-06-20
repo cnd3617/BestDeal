@@ -15,7 +15,7 @@ class Frontend:
         self.year = 2019
         self.start_date = date(year=self.year, month=1, day=1)
         self.end_date = date(year=self.year, month=12, day=31)
-        logger.info('Display prices from [{}] to [{}]'.format(self.start_date, self.end_date))
+        logger.info('Prepare prices from [{}] to [{}]'.format(self.start_date, self.end_date))
 
     @staticmethod
     def daterange(start_date, end_date):
