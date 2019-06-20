@@ -5,6 +5,9 @@ from loguru import logger
 
 
 class RueDuCommerce(Vendor):
+    """
+    TODO: blocked by Javascript, needs to find a workaround.
+    """
     def __init__(self):
         sites = [
             'https://bit.ly/2V4ev77',  # GTX 1060 6GB
@@ -17,6 +20,7 @@ class RueDuCommerce(Vendor):
         super().__init__(source_name=__class__.__name__, sites=sites)
 
     def enrich_deals_from_soup(self, soup, deals):
+        # logger.debug(soup.prettify())
         for item in soup.find_all('article', attrs={'itemtype': 'http://schema.org/Product'}):
             product_name = item.find('div', attrs={'class': 'summary'}).text
             product_price = self.clean_price(item.find('div', attrs={'class': 'price'}).text)
