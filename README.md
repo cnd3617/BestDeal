@@ -2,11 +2,12 @@ BestDeal Project
 =======================
 
 Easily compare your most wanted products among your favorite vendors to buy cheapest.
-Currently it implements a comparator of Graphics Card of NVidia vendor among multiple hardware resellers.
+
+Currently it implements a comparator of NVidia graphic cards among multiple french hardware vendors.
 
 <img src='https://github.com/RichardDally/BestDeal/blob/master/screenshots/GTX2080_20181202.png' style='width:334px; height:306px; float: right;'>
 
-BestDeal provides you a visualization tool to spot best moment to buy.
+BestDeal provides you a visualization tool to anticipate best timing to buy.
 
 Requirements
 -------------
