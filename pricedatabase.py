@@ -206,3 +206,15 @@ class PriceDatabase:
                 'FROM product '
         self.cursor.execute(query)
         return self.cursor.fetchall()
+
+    def get_all_product_types(self):
+        query = 'SELECT distinct(product_type) ' \
+                'FROM product '
+        self.cursor.execute(query)
+        return [x['product_type'] for x in self.cursor.fetchall()]
+
+
+if __name__ == '__main__':
+    db = PriceDatabase()
+    for product_type in db.get_all_product_types():
+        logger.info('Product type [{}]'.format(product_type))

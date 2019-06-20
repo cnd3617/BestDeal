@@ -7,7 +7,6 @@ from datetime import timedelta, date
 from loguru import logger
 import plotly
 import bestdeal
-import itertools
 
 
 class Frontend:
@@ -94,9 +93,8 @@ class Frontend:
 
         bd = bestdeal.BestDeal()
         children = []
-        product_items = [bd.product_types, ['', 'Ti']]
-        for product_type in itertools.product(*product_items):
-            data = self.build_graph_by_product_type(bd, ' '.join(product_type).strip(), colors)
+        for product_type in bd.db.get_all_product_types():
+            data = self.build_graph_by_product_type(bd, product_type, colors)
             if data:
                 children += data
 
