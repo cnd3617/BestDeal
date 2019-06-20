@@ -22,6 +22,7 @@ class PriceDatabase:
     HISTO = histo_id, product_id, source_id, histo_price, histo_date
     """
     def __init__(self, filename='PricesHistorization.db'):
+        logger.info('Connecting to database [{}]'.format(filename))
         # isolation_level=None => auto commit
         self.connection = sqlite3.connect(database=filename, isolation_level=None)
         self.connection.row_factory = dict_factory
