@@ -41,12 +41,16 @@ class BestDeal:
 
     def display_best_deals(self):
         logger.info('Best deals for [{}]'.format(self.db.get_today_date()))
-        cheapest_products = self.db.get_cheapest_by_product_type()
+        cheapest_products = []
+        for product_type in self.db.get_all_product_types():
+            cheapest = self.db.get_cheapest(product_type, self.db.get_today_date())
+            if cheapest is not None:
+                cheapest_products.append(cheapest)
         max_lengths = {}
         for product in cheapest_products:
             for key, value in product.items():
                 max_lengths.setdefault(key, 0)
-                max_lengths[key] = max(max_lengths[key], len(value))
+                max_lengths[key] = max(max_lengths[key], len(str(value)))
         for product in cheapest_products:
             template = 'Cheapest [{product_type:' + str(max_lengths['product_type']) + '}] [{histo_price:' + str(max_lengths['histo_price']) + '}]€ [{product_name:' + str(max_lengths['product_name']) + '}] [{source_name:' + str(max_lengths['source_name']) + '}]'
             logger.info(template.format(**product))

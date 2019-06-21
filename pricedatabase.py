@@ -110,42 +110,17 @@ class PriceDatabase:
             return float(fetched_values[0]['histo_price'])
         return None
 
-    def get_cheapest_by_product_type(self):
-        """
-        SELECT product_name, product_type, MIN(histo_price) AS histo_price, histo_date, source_name
-        FROM histo, product, source
-        WHERE source.source_id = histo.source_id AND product.product_id = histo.product_id AND histo.histo_date LIKE "20181109_%"
-        GROUP BY product_type
-        """
-        query = 'SELECT product_name, product_type, min(histo_price) AS histo_price, histo_date, source_name ' \
-                'FROM histo, product, source ' \
-                'WHERE source.source_id = histo.source_id AND ' \
-                'product.product_id = histo.product_id AND ' \
-                'histo.histo_date like "{}_%" ' \
-                'GROUP BY product_type'.format(self.get_today_date())
-        self.cursor.execute(query)
-        return self.cursor.fetchall()
-
     def get_cheapest_price(self, source_id, product_type, histo_date):
+        """
+        DEPRECATED
+        TODO: REMOVE THIS
+        """
         query = 'SELECT MIN(histo.histo_price) AS histo_price, histo.histo_date, product.product_name ' \
                 'FROM histo, product ' \
                 'WHERE histo.source_id = "{}" AND ' \
                 'product.product_id = histo.product_id AND ' \
                 'product.product_type = "{}" AND ' \
                 'histo.histo_date like "{}_%"'.format(source_id, product_type, histo_date)
-        self.cursor.execute(query)
-        return self.cursor.fetchall()
-
-    def get_cheapest_price_from_all_sources(self, product_type, histo_date):
-        query = 'SELECT MIN(histo.histo_price) AS histo_price, ' \
-                'histo.histo_date, ' \
-                'product.product_name, ' \
-                'source.source_name ' \
-                'FROM histo, product, source ' \
-                'WHERE product.product_id = histo.product_id AND ' \
-                'histo.source_id = source.source_id AND ' \
-                'product.product_type = "{}" AND ' \
-                'histo.histo_date like "{}_%"'.format(product_type, histo_date)
         self.cursor.execute(query)
         return self.cursor.fetchall()
 
@@ -157,42 +132,6 @@ class PriceDatabase:
         query = 'SELECT source_id, source_name FROM source'
         self.cursor.execute(query)
         return self.cursor.fetchall()
-
-    def get_time_series(self, source_id, product_type):
-        """
-        SELECT histo_price, histo_date, product.product_name
-        FROM histo, product
-        WHERE source_id = 1 AND product.product_id = histo.product_id AND product.product_type = 'GTX 1080'
-        GROUP BY histo_date
-        ORDER BY histo.histo_date
-        """
-        query = 'SELECT histo_price, histo_date, product.product_name ' \
-                'FROM histo, product ' \
-                'WHERE source_id = {} AND product.product_id = histo.product_id AND product.product_type = "{}" ' \
-                'GROUP BY histo_date ' \
-                'ORDER BY histo.histo_date'.format(source_id, product_type)
-        self.cursor.execute(query)
-        return self.cursor.fetchall()
-
-    def get_minimum_price(self, source_id, product_type, histo_date):
-        """
-        SELECT MIN(histo_price) AS histo_price, histo_date, product.product_name
-        FROM histo, product
-        WHERE source_id = 1 AND
-        product.product_id = histo.product_id AND
-        product.product_type = 'GTX 1080' AND
-        histo.histo_date like '20181123_%'
-        """
-        query = 'SELECT MIN(histo_price) AS histo_price, histo_date, product.product_name ' \
-                'FROM histo, product ' \
-                'WHERE source_id = {} AND ' \
-                'product.product_id = histo.product_id AND ' \
-                'product.product_type = "{}" AND ' \
-                'histo.histo_date like "{}_%" ' \
-                'ORDER BY histo.histo_date'.format(source_id, product_type, histo_date)
-        logger.trace('Query [{}]'.format(query))
-        self.cursor.execute(query)
-        return self.cursor.fetchone()
 
     def get_all_prices(self):
         query = 'SELECT * ' \
@@ -209,12 +148,44 @@ class PriceDatabase:
 
     def get_all_product_types(self):
         query = 'SELECT distinct(product_type) ' \
-                'FROM product '
+                'FROM product ' \
+                'ORDER BY product_type'
         self.cursor.execute(query)
         return [x['product_type'] for x in self.cursor.fetchall()]
+
+    def get_cheapest(self, product_type, histo_date):
+        query = 'SELECT product_name, product_type, histo_price, source_name ' \
+                'FROM histo, product, source ' \
+                'WHERE source.source_id = histo.source_id ' \
+                'AND product.product_id = histo.product_id ' \
+                'AND histo.histo_date LIKE "{}_%" ' \
+                'AND product.product_type = "{}"'.format(histo_date, product_type)
+        self.cursor.execute(query)
+        rows = self.cursor.fetchall()
+        cheapest = None
+        for row in rows:
+            if cheapest is None or float(row['histo_price']) < float(cheapest['histo_price']):
+                cheapest = row
+        return cheapest
+
+    def get_cheapest_from_specific_source(self, product_type, histo_date, source_id):
+        query = 'SELECT product_name, histo_price, source_name ' \
+                'FROM histo, product, source ' \
+                'WHERE source.source_id = histo.source_id ' \
+                'AND source.source_id = {} ' \
+                'AND product.product_id = histo.product_id ' \
+                'AND histo.histo_date LIKE "{}_%" ' \
+                'AND product.product_type = "{}"'.format(source_id, histo_date, product_type)
+        self.cursor.execute(query)
+        rows = self.cursor.fetchall()
+        cheapest = None
+        for row in rows:
+            if cheapest is None or float(row['histo_price']) < float(cheapest['histo_price']):
+                cheapest = row
+        return cheapest
 
 
 if __name__ == '__main__':
     db = PriceDatabase()
-    for product_type in db.get_all_product_types():
-        logger.info('Product type [{}]'.format(product_type))
+    # logger.info(db.get_cheapest('2080', '20190621'))
+    # logger.info(db.get_cheapest('1060', '20190101', 1))
