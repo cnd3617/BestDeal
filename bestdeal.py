@@ -82,9 +82,11 @@ class BestDeal:
             if update_price_details:
                 self.format_log_update_price_details(update_price_details)
 
-    def format_log_update_price_details(self, update_price_details):
+    @staticmethod
+    def format_log_update_price_details(update_price_details):
         """
         Bloat code to fit to maximum length
+        TODO: refactor this
         """
         product_name_max_length = 0
         source_name_max_length = 0
