@@ -22,8 +22,10 @@ class BestDeal:
             try:
                 self.scrap_and_store()
                 self.display_best_deals()
+            except AttributeError as exception:
+                logger.exception(exception)
             except Exception as exception:
-                logger.warning(exception)
+                logger.exception(exception)
             logger.info('Waiting [{}] seconds until next deal watch'.format(self.wait_in_seconds))
             time.sleep(self.wait_in_seconds)
 
