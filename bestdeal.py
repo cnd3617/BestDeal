@@ -100,7 +100,9 @@ class BestDeal:
                 today_last_price_max_length = max(today_last_price_max_length, len(detail.today_last_price))
         template = 'New price for [{:' + str(product_name_max_length) + '}] from [{:' + str(source_name_max_length) + '}] : [{:' + str(new_price_max_length) + '}]{}'
         for detail in update_price_details:
-            previous_price_info = ' Today last price [{:' + str(today_last_price_max_length) + '}]'.format(detail.today_last_price) if detail.today_last_price else ''
+            previous_price_info = ''
+            if detail.today_last_price is not None:
+                previous_price_info = ' Today last price [{:' + str(today_last_price_max_length) + '}]'.format(detail.today_last_price)
             logger.info(template.format(detail.product_name, detail.source_name, detail.new_price, previous_price_info))
 
     def update_price(self, product_name, product_type, source_name, new_price):
@@ -115,7 +117,7 @@ class BestDeal:
         UpdatePriceDetails = namedtuple('UpdatePriceDetails', 'product_name source_name new_price today_last_price')
         if today_last_price is None or today_last_price != new_price:
             self.db.add_price(product_id, source_id, new_price, self.db.get_today_datetime())
-            update_price_details = UpdatePriceDetails(product_name, source_name, str(new_price), str(today_last_price))
+            update_price_details = UpdatePriceDetails(product_name, source_name, str(new_price), str(today_last_price) if today_last_price else None)
         return update_price_details
 
 
