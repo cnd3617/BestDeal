@@ -37,7 +37,7 @@ class LDLC(Vendor):
 if __name__ == '__main__':
     from loguru import logger
     vendor = LDLC()
-    deals = vendor.fetch_deals()
-    for deal in deals:
+    fetched_deals = vendor.fetch_deals()
+    for deal in fetched_deals:
         logger.info(deal)
-    print(logger.info(deals))
+    print(logger.info(fetched_deals))
