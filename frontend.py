@@ -42,8 +42,8 @@ class Frontend:
             y = []
             for single_date in self.daterange(self.start_date, self.end_date):
                 current_date = single_date.strftime('%Y%m%d')
-                minimum_record = bd.db.get_minimum_price(source['source_id'], product_type, current_date)
-                if minimum_record['histo_price']:
+                minimum_record = bd.db.get_cheapest_from_specific_source(product_type, current_date, source['source_id'])
+                if minimum_record and minimum_record['histo_price']:
                     x.append(single_date)
                     y.append(minimum_record['histo_price'])
             if x and y:
