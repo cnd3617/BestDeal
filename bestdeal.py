@@ -102,7 +102,8 @@ class BestDeal:
         for detail in update_price_details:
             previous_price_info = ''
             if detail.today_last_price is not None:
-                previous_price_info = ' Today last price [{:' + str(today_last_price_max_length) + '}]'.format(detail.today_last_price)
+                previous_price_info = ' Today last price [{:' + str(today_last_price_max_length) + '}]'
+                previous_price_info.format(detail.today_last_price)
             logger.info(template.format(detail.product_name, detail.source_name, detail.new_price, previous_price_info))
 
     def update_price(self, product_name, product_type, source_name, new_price):
