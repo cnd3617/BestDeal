@@ -12,6 +12,9 @@ class TopAchat(Vendor):
             'https://bit.ly/2CMzlkr',  # RTX 2060
             'https://bit.ly/2FMNlg0',  # RTX 2070
             'https://bit.ly/2JQck65',  # RTX 2080
+            'https://bit.ly/2Y1r2NL',  # RTX 2060 Super
+            'https://bit.ly/2YRb8Tj',  # RTX 2070 Super
+            'https://bit.ly/2Yp0AJT',  # RTX 2080 Super
             'https://bit.ly/2TG5EXT',  # RTX 2080 Ti
         ]
         super().__init__(source_name=__class__.__name__, sites=sites)
