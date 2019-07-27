@@ -1,5 +1,6 @@
 # coding: utf-8
 
+import re
 import pricedatabase
 import time
 from topachat import TopAchat
@@ -29,17 +30,50 @@ class BestDeal:
             logger.info('Waiting [{}] seconds until next deal watch'.format(self.wait_in_seconds))
             time.sleep(self.wait_in_seconds)
 
-    def extract_product_type(self, product_name):
+    def find_exactly_one_element(self, pattern_data, raw_data):
+        result = None
+        refined_pattern_tokens = []
+        at_least_one_space = r'\s{1,}'
+        # Build search pattern for " Tixxx" or "2070SUPER " (there must be at least one space)
+        # Avoid to gather "xxxxxTIxxxx"
+        for pattern_token in pattern_data:
+            refined_pattern_tokens.append(f'{at_least_one_space}{pattern_token}')
+            refined_pattern_tokens.append(f'{pattern_token}{at_least_one_space}')
+        pattern = r"{}".format('|'.join(refined_pattern_tokens))
+        parsed = re.findall(pattern, raw_data, re.IGNORECASE)
+        parsed = list(set(map(lambda x: x.strip().upper(), parsed)))
+        if len(parsed) > 1:
+            logger.warning(f'Parsed data is wrong [{parsed}]')
+        elif parsed:
+            result = parsed[0]
+        return result
+
+    def extract_product_data(self, product_description):
+        brands = ['KFA2', 'GIGABYTE', 'ZOTAC', 'MSI', 'PNY', 'PALIT', 'EVGA', 'ASUS', 'INNO3D']
+        lineup_type = ['TI', 'SUPER']
+        product_classes = ['1050', '1060', '1660', '1070', '1080', '2060', '2070', '2080']
+        higher_lineup = {
+            'TI': ['1050', '1660', '2080'],
+            'SUPER': ['2060', '2070', '2080']
+        }
+        standard_lineup = ['1050', '1060', '1070', '1080', '2060', '2070', '2080']
+
+        brand = self.find_exactly_one_element(brands, product_description)
+        if not brand:
+            logger.warning(f'Brand not found in product [{product_description}]')
+            return None, None
+
+        lineup_type_result = self.find_exactly_one_element(lineup_type, product_description)
+        product_class = self.find_exactly_one_element(product_classes, product_description)
+
         product_type = None
-        for model in self.product_types:
-            if model in product_name:
-                product_type = model
-                break
-        if product_type and (' ti' in product_name.lower() or 'ti ' in product_name.lower() or '0ti' in product_name.lower()):
-            # Product 1060 Ti does not exist...
-            if product_type != '1060':
-                product_type += ' Ti'
-        return product_type
+        if lineup_type_result and product_class in higher_lineup[lineup_type_result] or product_class in standard_lineup:
+            product_type = product_class
+
+        if product_type is not None and lineup_type_result is not None:
+            product_type += f' {lineup_type_result}'
+
+        return brand, product_type
 
     def display_best_deals(self):
         logger.info('Best deals for [{}]'.format(self.db.get_today_date()))
@@ -71,14 +105,14 @@ class BestDeal:
                 logger.warning('Failed to fetch deals for [{}]. Reason [{}]'.format(source.source_name, exception))
                 continue
             update_price_details = []
-            for product_name, product_price in deals.items():
-                product_type = self.extract_product_type(product_name)
+            for product_description, product_price in deals.items():
+                brand, product_type = self.extract_product_data(product_description)
                 if product_type:
-                    update_price_detail = self.update_price(product_name, product_type, source.source_name, float(product_price))
+                    update_price_detail = self.update_price(product_description, product_type, source.source_name, float(product_price))
                     if update_price_detail is not None:
                         update_price_details.append(update_price_detail)
                 else:
-                    logger.debug('Ignoring [{}]'.format(product_name))
+                    logger.debug(f'Ignoring [{product_description}]')
             if update_price_details:
                 self.format_log_update_price_details(update_price_details)
 
