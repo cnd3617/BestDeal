@@ -6,7 +6,6 @@ from vendor import Vendor
 class LDLC(Vendor):
     def __init__(self):
         sites = [
-            'https://bit.ly/2BrQrDN',  # GTX 1060 6GB
             'https://bit.ly/2HPijWU',  # GTX 1660
             'https://bit.ly/2uB0lPn',  # GTX 1660 Ti
             'https://bit.ly/2YAhVkl',  # RTX 2060
