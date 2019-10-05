@@ -91,7 +91,10 @@ class BestDeal:
                 max_lengths.setdefault(key, 0)
                 max_lengths[key] = max(max_lengths[key], len(str(value)))
         for product in cheapest_products:
-            template = 'Cheapest [{product_type:' + str(max_lengths['product_type']) + '}] [{histo_price:' + str(max_lengths['histo_price']) + '}]€ [{product_name:' + str(max_lengths['product_name']) + '}] [{source_name:' + str(max_lengths['source_name']) + '}]'
+            template = 'Cheapest [{product_type:' + str(max_lengths['product_type']) + '}] ' \
+                       '[{histo_price:' + str(max_lengths['histo_price']) + '}]€' \
+                       '[{product_name:' + str(max_lengths['product_name']) + '}] ' \
+                       '[{source_name:' + str(max_lengths['source_name']) + '}]'
             logger.info(template.format(**product))
 
     def scrap_and_store(self):
