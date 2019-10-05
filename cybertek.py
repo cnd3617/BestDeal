@@ -20,7 +20,7 @@ class Cybertek(Vendor):
 
     @staticmethod
     def remove_garbage_characters(string):
-        return string.replace('\r', '').replace('\n', '').replace(' ', '').replace('\t', '')
+        return string.replace('\r', '').replace('\n', '').replace('\t', '')
 
     @staticmethod
     def remove_all_span(tag):
