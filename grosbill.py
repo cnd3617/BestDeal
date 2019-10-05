@@ -7,11 +7,7 @@ from loguru import logger
 class GrosBill(Vendor):
     def __init__(self):
         sites = [
-            'https://bit.ly/2FBdiOk',  # GTX 1060 6GB
-            'https://bit.ly/2uzeM6r',  # GTX 1660 Ti
-            'https://bit.ly/2uAtoCD',  # RTX 2070
-            'https://bit.ly/2I45eIH',  # RTX 2080
-            'https://bit.ly/2YCFvwU',  # RTX 2080 Ti
+            'https://bit.ly/2McijjE'
         ]
         super().__init__(source_name=__class__.__name__, sites=sites)
 
