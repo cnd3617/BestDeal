@@ -8,6 +8,7 @@ from grosbill import GrosBill
 from rueducommerce import RueDuCommerce
 from cybertek import Cybertek
 from ldlc import LDLC
+from mindfactory import MindFactory
 from loguru import logger
 from collections import namedtuple
 
@@ -98,11 +99,14 @@ class BestDeal:
             logger.info(template.format(**product))
 
     def scrap_and_store(self):
-        sources = [TopAchat(),
-                   GrosBill(),
-                   RueDuCommerce(),
-                   Cybertek(),
-                   LDLC()]
+        sources = [
+            TopAchat(),
+            GrosBill(),
+            RueDuCommerce(),
+            Cybertek(),
+            LDLC(),
+            MindFactory()
+        ]
         for source in sources:
             logger.info('Fetch deals from [{}]'.format(source.source_name))
             try:
