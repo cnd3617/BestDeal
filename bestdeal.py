@@ -55,7 +55,18 @@ class BestDeal:
         return result
 
     def extract_product_data(self, product_description):
-        brands = ['KFA2', 'GIGABYTE', 'ZOTAC', 'MSI', 'PNY', 'PALIT', 'EVGA', 'ASUS', 'INNO3D']
+        brands = [
+            'GAINWARD',
+            'KFA2',
+            'GIGABYTE',
+            'ZOTAC',
+            'MSI',
+            'PNY',
+            'PALIT',
+            'EVGA',
+            'ASUS',
+            'INNO3D',
+        ]
         lineup_type = ['TI', 'SUPER']
         product_classes = ['1050', '1060', '1660', '1070', '1080', '2060', '2070', '2080']
         higher_lineup = {
