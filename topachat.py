@@ -6,7 +6,7 @@ from vendor import Vendor
 class TopAchat(Vendor):
     def __init__(self):
         sites = [
-            'https://bit.ly/2uBlMQz',  # GTX 1060 6GB
+            'https://bit.ly/2CJDkOi',  # GTX 1660 SUPER
             'https://bit.ly/2FLwEld',  # GTX 1660
             'https://bit.ly/2uzOWiG',  # GTX 1660 Ti
             'https://bit.ly/2CMzlkr',  # RTX 2060
