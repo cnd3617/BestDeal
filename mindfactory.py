@@ -7,7 +7,12 @@ from loguru import logger
 class MindFactory(Vendor):
     def __init__(self):
         sites = [
-            'https://www.mindfactory.de/Hardware/Grafikkarten+(VGA)/GeForce+GTX+fuer+Gaming/GTX+1660.html'  # GTX 1660
+            'https://www.mindfactory.de/Hardware/Grafikkarten+(VGA)/GeForce+GTX+fuer+Gaming/GTX+1660.html',     # 1660
+            'https://www.mindfactory.de/Hardware/Grafikkarten+(VGA)/GeForce+GTX+fuer+Gaming/GTX+1660+Ti.html',  # 1660 TI
+            'https://www.mindfactory.de/Hardware/Grafikkarten+(VGA)/GeForce+RTX+fuer+Gaming/RTX+2060.html',     # 2060
+            'https://www.mindfactory.de/Hardware/Grafikkarten+(VGA)/GeForce+RTX+fuer+Gaming/RTX+2070.html',     # 2070
+            'https://www.mindfactory.de/Hardware/Grafikkarten+(VGA)/GeForce+RTX+fuer+Gaming/RTX+2080.html',     # 2080
+            'https://www.mindfactory.de/Hardware/Grafikkarten+(VGA)/GeForce+RTX+fuer+Gaming/RTX+2080+Ti.html',  # 2080 TI
         ]
         super().__init__(source_name=__class__.__name__, sites=sites)
 
