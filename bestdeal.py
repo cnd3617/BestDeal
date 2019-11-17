@@ -58,9 +58,9 @@ class BestDeal:
         product_classes = ['1050', '1060', '1660', '1070', '1080', '2060', '2070', '2080']
         higher_lineup = {
             'TI': ['1050', '1660', '2080'],
-            'SUPER': ['2060', '2070', '2080']
+            'SUPER': ['1660', '2060', '2070', '2080']
         }
-        standard_lineup = ['1050', '1060', '1070', '1080', '2060', '2070', '2080']
+        standard_lineup = ['1050', '1060', '1070', '1080', '1660', '2060', '2070', '2080']
 
         brand = self.find_exactly_one_element(brands, product_description)
         if not brand:
