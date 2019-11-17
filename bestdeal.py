@@ -3,6 +3,7 @@
 import re
 import pricedatabase
 import time
+from typing import Optional
 from topachat import TopAchat
 from grosbill import GrosBill
 from rueducommerce import RueDuCommerce
@@ -34,7 +35,8 @@ class BestDeal:
             logger.info('Waiting [{}] seconds until next deal watch'.format(self.wait_in_seconds))
             time.sleep(self.wait_in_seconds)
 
-    def find_exactly_one_element(self, pattern_data, raw_data):
+    @staticmethod
+    def find_exactly_one_element(pattern_data, raw_data) -> Optional[str]:
         result = None
         refined_pattern_tokens = []
         at_least_one_space = r'\s{1,}'
