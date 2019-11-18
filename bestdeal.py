@@ -54,7 +54,8 @@ class BestDeal:
             result = parsed[0]
         return result
 
-    def extract_product_data(self, product_description):
+    @staticmethod
+    def extract_product_data(product_description):
         brands = [
             'GAINWARD',
             'KFA2',
@@ -75,13 +76,13 @@ class BestDeal:
         }
         standard_lineup = ['1050', '1060', '1070', '1080', '1660', '2060', '2070', '2080']
 
-        brand = self.find_exactly_one_element(brands, product_description)
+        brand = BestDeal.find_exactly_one_element(brands, product_description)
         if not brand:
             logger.warning(f'Brand not found in product [{product_description}]')
             return None, None
 
-        lineup_type_result = self.find_exactly_one_element(lineup_type, product_description)
-        product_class = self.find_exactly_one_element(product_classes, product_description)
+        lineup_type_result = BestDeal.find_exactly_one_element(lineup_type, product_description)
+        product_class = BestDeal.find_exactly_one_element(product_classes, product_description)
 
         product_type = None
         if lineup_type_result and product_class in higher_lineup[lineup_type_result] or product_class in standard_lineup:
