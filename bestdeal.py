@@ -21,7 +21,6 @@ class BestDeal:
         if in_memory:
             self.database_filename = ':memory:'
         self.db = pricedatabase.PriceDatabase(self.database_filename)
-        self.product_types = ['1060', '1660', '1070', '1080', '2060', '2070', '2080']
 
     def continuous_watch(self):
         while True:
