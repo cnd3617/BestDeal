@@ -4,12 +4,15 @@ import re
 import bs4
 import requests
 from loguru import logger
+from abc import ABCMeta, abstractmethod
+from typing import Dict
 
 
-class Vendor:
-    def __init__(self, source_name, sites):
+class Source:
+    __metaclass__ = ABCMeta
+
+    def __init__(self, source_name: str) -> None:
         self.source_name = source_name
-        self.sites = sites
         self.headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 '
                                       '(KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
                         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -18,18 +21,22 @@ class Vendor:
                         'Accept-Language': 'en-US,en;q=0.8',
                         'Connection': 'keep-alive'}
 
-    def fetch_deals(self):
+    def fetch_deals(self, product_mapping: Dict[str, str]):
+        """
+        Beautiful Soup is used to process html.
+        Specific parsing is done in _enrich_deals_from_soup method.
+        """
         deals = {}
-        for site in self.sites:
-            html = requests.get(url=site, headers=self.headers)
+        for product, url in product_mapping.items():
+            html = requests.get(url=url, headers=self.headers)
             soup = bs4.BeautifulSoup(html.text, 'html.parser')
             current_deal_count = len(deals)
-            self.enrich_deals_from_soup(soup, deals)
+            self._enrich_deals_from_soup(soup, deals)
             fetched_deals_count = len(deals) - current_deal_count
             if not fetched_deals_count:
-                logger.warning('Site [{}] from [{}] fetched 0 deal...'.format(site, self.source_name))
+                logger.warning('Product [{}] has not been found on [{}]'.format(product, self.source_name))
             else:
-                logger.info('Site [{}] from [{}] fetched [{}] deals'.format(site, self.source_name, fetched_deals_count))
+                logger.info(f'[{fetched_deals_count}] [{product}] from [{self.source_name}] found.')
         return deals
 
     @staticmethod
@@ -41,5 +48,9 @@ class Vendor:
         m = re.search('([0-9]+)[€.,]+([0-9]+)', dirty_price)
         return '{}.{}'.format(m.group(1), m.group(2))
 
-    def enrich_deals_from_soup(self, soup, deals):
-        raise NotImplementedError()
+    @abstractmethod
+    def _enrich_deals_from_soup(self, soup, deals):
+        """
+        HTML parsing is implemented in this method
+        """
+        pass

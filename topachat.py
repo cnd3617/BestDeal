@@ -1,25 +1,13 @@
 # coding: utf-8
 
-from vendor import Vendor
+from source import Source
 
 
-class TopAchat(Vendor):
+class TopAchat(Source):
     def __init__(self):
-        sites = [
-            'https://bit.ly/2CJDkOi',  # GTX 1660 SUPER
-            'https://bit.ly/2FLwEld',  # GTX 1660
-            'https://bit.ly/2uzOWiG',  # GTX 1660 Ti
-            'https://bit.ly/2CMzlkr',  # RTX 2060
-            'https://bit.ly/2FMNlg0',  # RTX 2070
-            'https://bit.ly/2JQck65',  # RTX 2080
-            'https://bit.ly/2Y1r2NL',  # RTX 2060 Super
-            'https://bit.ly/2YRb8Tj',  # RTX 2070 Super
-            'https://bit.ly/2Yp0AJT',  # RTX 2080 Super
-            'https://bit.ly/2TG5EXT',  # RTX 2080 Ti
-        ]
-        super().__init__(source_name=__class__.__name__, sites=sites)
+        super().__init__(source_name=__class__.__name__)
 
-    def enrich_deals_from_soup(self, soup, deals):
+    def _enrich_deals_from_soup(self, soup, deals):
         for item in soup.findAll('article', attrs={'class': 'grille-produit'}):
             product_name = item.find('h3').text
             product_price = self.clean_price(item.find('div', attrs={'itemprop': 'price'}).text)

@@ -1,12 +1,12 @@
 import unittest
-import pricedatabase
+from pricedatabase import PriceDatabase
 from datetime import datetime, timezone, timedelta
 
 
 class TestDatabase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.db = pricedatabase.PriceDatabase(filename=':memory:')
+        cls.db = PriceDatabase(filename=':memory:')
 
     def feed_database(self, source_name, product_name, product_type, prices):
         source_id = self.db.insert_if_necessary(table='source', columns=['source_name'], values=[source_name])

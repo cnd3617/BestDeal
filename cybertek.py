@@ -1,26 +1,13 @@
 # coding: utf-8
 
 import re
-from vendor import Vendor
+from source import Source
 from loguru import logger
 
 
-class Cybertek(Vendor):
+class Cybertek(Source):
     def __init__(self):
-        sites = [
-            'https://bit.ly/2OyuckC',  # GTX 1060 6GB
-            'https://bit.ly/2uL1bJH',  # GTX 1660
-            'https://bit.ly/2YHhJjx',  # GTX 1660 TI
-            'https://bit.ly/2OMkPyq',  # GTX 1660 SUPER
-            'https://bit.ly/2OITRYd',  # RTX 2060
-            'https://bit.ly/2OSyMe2',  # RTX 2060 SUPER
-            'https://bit.ly/2FElIo5',  # RTX 2070
-            'https://bit.ly/2rzczcX',  # RTX 2070 SUPER
-            'https://bit.ly/2TIQ4uM',  # RTX 2080
-            'https://bit.ly/2qOGE8y',  # RTX 2080 SUPER
-            'https://bit.ly/2JSMgaD',  # RTX 2080 Ti
-        ]
-        super().__init__(source_name=__class__.__name__, sites=sites)
+        super().__init__(source_name=__class__.__name__)
 
     @staticmethod
     def remove_garbage_characters(string):
@@ -31,7 +18,7 @@ class Cybertek(Vendor):
         for span_tag in tag.findAll('span'):
             span_tag.replace_with('')
 
-    def enrich_deals_from_soup(self, soup, deals):
+    def _enrich_deals_from_soup(self, soup, deals):
         # logger.info(soup.prettify())
         products = soup.findAll('div', attrs={'class': re.compile('ppp-*')})
         for product in products:
@@ -44,9 +31,9 @@ class Cybertek(Vendor):
             deals[product_name] = product_price
 
 
-if __name__ == '__main__':
-    vendor = Cybertek()
-    fetched_deals = vendor.fetch_deals()
-    for deal in fetched_deals:
-        logger.info(deal)
-    logger.info('Fetched deals count [{}]'.format(len(fetched_deals)))
+# if __name__ == '__main__':
+#     vendor = Cybertek()
+#     fetched_deals = vendor.fetch_deals()
+#     for deal in fetched_deals:
+#         logger.info(deal)
+#     logger.info('Fetched deals count [{}]'.format(len(fetched_deals)))
