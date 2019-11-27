@@ -119,23 +119,31 @@ class BestDeal:
             MindFactory()
         ]
         for source in sources:
-            logger.info('Fetch deals from [{}]'.format(source.source_name))
-            try:
-                deals = source.fetch_deals()
-            except Exception as exception:
-                logger.warning('Failed to fetch deals for [{}]. Reason [{}]'.format(source.source_name, exception))
-                continue
-            update_price_details = []
-            for product_description, product_price in deals.items():
-                brand, product_type = self.extract_product_data(product_description)
-                if product_type:
-                    update_price_detail = self.update_price(product_description, product_type, source.source_name, float(product_price))
-                    if update_price_detail is not None:
-                        update_price_details.append(update_price_detail)
-                else:
-                    logger.debug(f'Ignoring [{product_description}]')
+            deals = self._scrap(source)
+            update_price_details = self._store(source, deals)
             if update_price_details:
                 self.format_log_update_price_details(update_price_details)
+
+    def _scrap(self, source):
+        logger.info('Fetch deals from [{}]'.format(source.source_name))
+        try:
+            deals = source.fetch_deals()
+        except Exception as exception:
+            logger.warning('Failed to fetch deals for [{}]. Reason [{}]'.format(source.source_name, exception))
+        return deals
+
+    def _store(self, source, deals):
+        update_price_details = []
+        for product_description, product_price in deals.items():
+            brand, product_type = self.extract_product_data(product_description)
+            if product_type:
+                update_price_detail = self.update_price(product_description, product_type, source.source_name,
+                                                        float(product_price))
+                if update_price_detail is not None:
+                    update_price_details.append(update_price_detail)
+            else:
+                logger.debug(f'Ignoring [{product_description}]')
+        return update_price_details
 
     @staticmethod
     def format_log_update_price_details(update_price_details):
