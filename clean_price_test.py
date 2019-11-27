@@ -1,7 +1,7 @@
 # coding: utf-8
 
 import unittest
-from vendor import Source
+from source import Source
 
 
 class TestCleanPrice(unittest.TestCase):

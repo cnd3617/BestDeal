@@ -43,7 +43,3 @@ class TestDatabase(unittest.TestCase):
         self.assertEqual(len(result), 1) # Only 1 record
         self.assertEqual(result[0]['histo_price'], 15.0) # Exact minimum price
         self.assertEqual(result[0]['product_name'], 'Product1') # Exact product name
-
-
-if __name__ == '__main__':
-    unittest.main()
