@@ -10,10 +10,14 @@ class Cybertek(Vendor):
         sites = [
             'https://bit.ly/2OyuckC',  # GTX 1060 6GB
             'https://bit.ly/2uL1bJH',  # GTX 1660
-            'https://bit.ly/2YHhJjx',  # GTX 1660 Ti
+            'https://bit.ly/2YHhJjx',  # GTX 1660 TI
+            'https://bit.ly/2OMkPyq',  # GTX 1660 SUPER
             'https://bit.ly/2OITRYd',  # RTX 2060
+            'https://bit.ly/2OSyMe2',  # RTX 2060 SUPER
             'https://bit.ly/2FElIo5',  # RTX 2070
+            'https://bit.ly/2rzczcX',  # RTX 2070 SUPER
             'https://bit.ly/2TIQ4uM',  # RTX 2080
+            'https://bit.ly/2qOGE8y',  # RTX 2080 SUPER
             'https://bit.ly/2JSMgaD',  # RTX 2080 Ti
         ]
         super().__init__(source_name=__class__.__name__, sites=sites)
