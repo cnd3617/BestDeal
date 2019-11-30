@@ -13,8 +13,8 @@ from source import Source
 
 
 class NVidiaFetcher(AbstractFetcher):
-    def __init__(self, database_filename):
-        super().__init__(database_filename)
+    def __init__(self):
+        super().__init__(collection_name='NVidiaGPU')
 
     def get_source_product_urls(self) -> Dict[type(Source), Dict[str, str]]:
         return {
@@ -107,5 +107,5 @@ class NVidiaFetcher(AbstractFetcher):
 
 
 if __name__ == '__main__':
-    fetcher = NVidiaFetcher(database_filename='NVidiaGPU.db')
+    fetcher = NVidiaFetcher()
     fetcher.continuous_watch()

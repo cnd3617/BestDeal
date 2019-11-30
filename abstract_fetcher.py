@@ -13,34 +13,75 @@ from loguru import logger
 class AbstractFetcher:
     __metaclass__ = ABCMeta
 
-    def __init__(self, database_filename):
+    def __init__(self, collection_name):
         self.wait_in_seconds = 900
-        self.database_filename = database_filename
-        self.db = pricedatabase.PriceDatabase(self.database_filename)
+        self.database = pricedatabase.PriceDatabase('localhost', 27017, collection_name)
 
     def continuous_watch(self):
         while True:
             try:
                 self._scrap_and_store()
-                self._display_best_deals()
+                # self._display_best_deals()
             except Exception as exception:
                 logger.exception(exception)
             logger.info('Waiting [{}] seconds until next deal watch'.format(self.wait_in_seconds))
             time.sleep(self.wait_in_seconds)
 
     def _scrap_and_store(self):
+        """
+        Example:
+        source_class = TopAchat
+        product_url_mapping = {'1660 SUPER': 'https://bit.ly/2CJDkOi'}
+        """
+
+        posts = []
         for source_class, product_url_mapping in self.get_source_product_urls().items():
+            logger.debug(f"Processing source [{source_class}]")
             source = source_class()
-            deals = self._scrap(source, product_url_mapping)
-            update_price_details = self._store(source, deals)
-            if update_price_details:
-                self._format_log_update_price_details(update_price_details)
+
+            # Scrap every available products for current source
+            for product, url in product_url_mapping.items():
+                deals = self._scrap_product(source, product, url)
+
+                # Create posts to insert in mongodb
+                for product_description, product_price in deals.items():
+                    brand, product_type = self._extract_product_data(product_description)
+                    if product_type:
+                        post = {"product_name": product_description,
+                                "product_brand": brand,
+                                "product_type": product_type,
+                                "product_price": float(product_price),
+                                "source": source.source_name,
+                                "url": url,
+                                "timestamp": self.database.get_today_datetime()}
+                        posts.append(post)
+                        #logger.info(post)
+
+        self.database.bulk_insert(posts)
+
+            # deals = self._scrap(source, product_url_mapping)
+            # update_price_details = self._store(source, deals)
+            # if update_price_details:
+            #     self._format_log_update_price_details(update_price_details)
+
+    def _scrap_product(self, source: Source, product, url):
+        """
+        Fetch deals for ONE product (one url)
+        """
+        deals = None
+        logger.info(f'Fetch [{product}] deals from [{source.source_name}]')
+        try:
+            deals = source.fetch_deals(product, url)
+        except Exception as exception:
+            logger.warning('Failed to fetch deals for [{}]. Reason [{}]'.format(source.source_name, exception))
+        return deals
 
     def _scrap(self, vendor: Source, product_url_mapping) -> Dict[str, str]:
         deals = None
         logger.info('Fetch deals from [{}]'.format(vendor.source_name))
         try:
-            deals = vendor.fetch_deals(product_url_mapping)
+            for product, url in product_url_mapping.items():
+                deals = vendor.fetch_deals(product_url_mapping)
         except Exception as exception:
             logger.warning('Failed to fetch deals for [{}]. Reason [{}]'.format(vendor.source_name, exception))
         return deals
@@ -50,15 +91,24 @@ class AbstractFetcher:
         for product_description, product_price in deals.items():
             brand, product_type = self._extract_product_data(product_description)
             if product_type:
-                update_price_detail = self._update_price(product_description, product_type, source.source_name,
-                                                        float(product_price))
-                if update_price_detail is not None:
-                    update_price_details.append(update_price_detail)
+                post = {"product_name": product_description,
+                        "product_brand": brand,
+                        "product_type": product_type,
+                        "product_price": float(product_price),
+                        "source": source.source_name,
+                        "url": None,
+                        "timestamp": self.db.get_today_datetime()}
+                logger.info(post)
+                # update_price_detail = self._update_price(product_description, product_type, source.source_name,
+                #                                          float(product_price))
+                # if update_price_detail is not None:
+                #     update_price_details.append(update_price_detail)
             else:
                 logger.debug(f'Ignoring [{product_description}]')
         return update_price_details
 
     def _update_price(self, product_name, product_type, source_name, new_price):
+
         source_id = self.db.insert_if_necessary(table='source',
                                                 columns=['source_name'],
                                                 values=[source_name])
