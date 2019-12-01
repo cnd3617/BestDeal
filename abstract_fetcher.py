@@ -37,7 +37,7 @@ class AbstractFetcher:
                 self._format_log_update_price_details(update_price_details)
 
     def _scrap(self, vendor: Source, product_url_mapping) -> Dict[str, str]:
-        deals = None
+        deals = []
         logger.info('Fetch deals from [{}]'.format(vendor.source_name))
         try:
             deals = vendor.fetch_deals(product_url_mapping)
