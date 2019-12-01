@@ -9,6 +9,14 @@ Currently it implements a comparator of NVidia graphic cards among multiple fren
 
 BestDeal provides you a visualization tool to anticipate best timing to buy.
 
+
+Continuous quality integration
+-------------
+
+[![Build Status](https://travis-ci.org/RichardDally/BestDeal.svg?branch=master)](https://travis-ci.org/RichardDally/BestDeal)
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/09178071e8a8453fa2acc6d47a4937aa)](https://www.codacy.com/manual/RichardDally/BestDeal?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=RichardDally/BestDeal&amp;utm_campaign=Badge_Grade)
+
 Requirements
 -------------
 
