@@ -46,6 +46,8 @@ class AbstractFetcher:
             # Scrap every available products for current source
             for product, url in product_url_mapping.items():
                 deals = self._scrap_product(source, product, url)
+                if not deals:
+                    continue
 
                 # Create posts to insert in mongodb
                 for product_description, product_price in deals.items():
