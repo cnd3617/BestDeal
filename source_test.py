@@ -1,3 +1,5 @@
+# coding: utf-8
+
 import pytest
 from nvidia_fetcher import NVidiaFetcher
 from topachat import TopAchat
