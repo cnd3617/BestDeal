@@ -2,7 +2,6 @@
 
 from pymongo import MongoClient, ASCENDING
 from loguru import logger
-from datetime import datetime, timezone
 
 
 class PriceDatabase:
@@ -16,15 +15,6 @@ class PriceDatabase:
         self.client = MongoClient(host, port)
         self.database = self.client[self.database_name]
         self.collection = self.database[collection_name]
-        self.find_cheapest('2080')
-
-    @staticmethod
-    def get_today_date():
-        return datetime.now(timezone.utc).strftime('%Y%m%d')
-
-    @staticmethod
-    def get_today_datetime():
-        return datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')
 
     def bulk_insert(self, posts):
         logger.debug(f"Inserting [{len(posts)}] posts")

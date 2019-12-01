@@ -10,11 +10,12 @@ from mindfactory import MindFactory
 from loguru import logger
 from typing import Dict
 from source import Source
+from pricedatabase import PriceDatabase
 
 
 class NVidiaFetcher(AbstractFetcher):
-    def __init__(self):
-        super().__init__(collection_name='NVidiaGPU')
+    def __init__(self, database):
+        super().__init__(database)
 
     def get_source_product_urls(self) -> Dict[type(Source), Dict[str, str]]:
         return {
@@ -96,8 +97,7 @@ class NVidiaFetcher(AbstractFetcher):
         product_class = self.find_exactly_one_element(product_classes, product_description)
 
         product_type = None
-        if lineup_type_result and product_class in higher_lineup[
-            lineup_type_result] or product_class in standard_lineup:
+        if lineup_type_result and product_class in higher_lineup[lineup_type_result] or product_class in standard_lineup:
             product_type = product_class
 
         if product_type is not None and lineup_type_result is not None:
@@ -107,5 +107,6 @@ class NVidiaFetcher(AbstractFetcher):
 
 
 if __name__ == '__main__':
-    fetcher = NVidiaFetcher()
+    db = PriceDatabase(host='localhost', port=27017, collection_name='NVidiaGPU')
+    fetcher = NVidiaFetcher(db)
     fetcher.continuous_watch()

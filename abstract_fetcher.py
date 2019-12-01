@@ -8,28 +8,41 @@ from source import Source
 from typing import Optional, Dict
 from collections import namedtuple
 from loguru import logger
+from datetime import datetime, timezone
 
 
 class AbstractFetcher:
     __metaclass__ = ABCMeta
 
-    def __init__(self, collection_name):
+    def __init__(self, database):
         self.wait_in_seconds = 900
-        self.database = pricedatabase.PriceDatabase('localhost', 27017, collection_name)
+        self.database = database
+
+    @staticmethod
+    def get_today_date():
+        return datetime.now(timezone.utc).strftime('%Y%m%d')
+
+    @staticmethod
+    def get_today_datetime():
+        return datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')
 
     def continuous_watch(self):
-        carry_on = True
-        while carry_on:
+        while 1:
             try:
                 self._scrap_and_store()
                 # self._display_best_deals()
+            except KeyboardInterrupt:
+                logger.info("Stopping gracefully...")
+                break
+            except Exception as exception:
+                logger.exception(exception)
+
+            try:
                 logger.info('Waiting [{}] seconds until next deal watch'.format(self.wait_in_seconds))
                 time.sleep(self.wait_in_seconds)
             except KeyboardInterrupt:
                 logger.info("Stopping gracefully...")
-                carry_on = False
-            except Exception as exception:
-                logger.exception(exception)
+                break
 
     def _scrap_and_store(self):
         """
@@ -59,11 +72,12 @@ class AbstractFetcher:
                                 "product_price": float(product_price),
                                 "source": source.source_name,
                                 "url": url,
-                                "timestamp": self.database.get_today_datetime()}
+                                "timestamp": self.get_today_datetime()}
                         posts.append(post)
                         #logger.info(post)
 
-        self.database.bulk_insert(posts)
+        if self.database:
+            self.database.bulk_insert(posts)
 
             # deals = self._scrap(source, product_url_mapping)
             # update_price_details = self._store(source, deals)
@@ -81,37 +95,6 @@ class AbstractFetcher:
         except Exception as exception:
             logger.warning('Failed to fetch deals for [{}]. Reason [{}]'.format(source.source_name, exception))
         return deals
-
-    def _scrap(self, vendor: Source, product_url_mapping) -> Dict[str, str]:
-        deals = None
-        logger.info('Fetch deals from [{}]'.format(vendor.source_name))
-        try:
-            for product, url in product_url_mapping.items():
-                deals = vendor.fetch_deals(product_url_mapping)
-        except Exception as exception:
-            logger.warning('Failed to fetch deals for [{}]. Reason [{}]'.format(vendor.source_name, exception))
-        return deals
-
-    def _store(self, source, deals):
-        update_price_details = []
-        for product_description, product_price in deals.items():
-            brand, product_type = self._extract_product_data(product_description)
-            if product_type:
-                post = {"product_name": product_description,
-                        "product_brand": brand,
-                        "product_type": product_type,
-                        "product_price": float(product_price),
-                        "source": source.source_name,
-                        "url": None,
-                        "timestamp": self.db.get_today_datetime()}
-                logger.info(post)
-                # update_price_detail = self._update_price(product_description, product_type, source.source_name,
-                #                                          float(product_price))
-                # if update_price_detail is not None:
-                #     update_price_details.append(update_price_detail)
-            else:
-                logger.debug(f'Ignoring [{product_description}]')
-        return update_price_details
 
     def _update_price(self, product_name, product_type, source_name, new_price):
 
