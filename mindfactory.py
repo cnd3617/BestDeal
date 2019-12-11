@@ -13,11 +13,3 @@ class MindFactory(Source):
             product_name = product.find('div', attrs={'class': 'pname'}).text
             product_price = product.find('div', attrs={'class': 'pprice'}).text
             deals[product_name] = self.clean_price(product_price)
-
-
-# if __name__ == '__main__':
-#     vendor = MindFactory()
-#     fetched_deals = vendor.fetch_deals()
-#     for deal in fetched_deals:
-#         logger.info(deal)
-#     logger.info('Fetched deals count [{}]'.format(len(fetched_deals)))

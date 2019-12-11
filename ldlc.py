@@ -23,12 +23,3 @@ class LDLC(Source):
             product_name = anchor_item.text
             product_price = self.clean_price(item.find('div', attrs={'class': 'price'}).text)
             deals[product_name] = product_price
-
-
-# if __name__ == '__main__':
-#     from loguru import logger
-#     vendor = LDLC()
-#     fetched_deals = vendor.fetch_deals()
-#     for deal in fetched_deals:
-#         logger.info(deal)
-#     print(logger.info(fetched_deals))
