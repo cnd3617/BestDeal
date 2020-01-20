@@ -39,7 +39,7 @@ class AbstractFetcher:
                 logger.exception(exception)
 
             try:
-                logger.info('Waiting [{}] seconds until next deal watch'.format(self.wait_in_seconds))
+                logger.info(f"Waiting [{self.wait_in_seconds}] seconds until next deal watch")
                 time.sleep(self.wait_in_seconds)
             except KeyboardInterrupt:
                 logger.info("Stopping gracefully...")
@@ -89,14 +89,10 @@ class AbstractFetcher:
         if self.database and posts:
             self.database.bulk_insert(posts)
 
-            # deals = self._scrap(source, product_url_mapping)
-            # update_price_details = self._store(source, deals)
-            # if update_price_details:
-            #     self._format_log_update_price_details(update_price_details)
-
-    def _scrap_product(self, source: Source, product, url):
+    def _scrap_product(self, source: Source, product: str, url: str) -> Dict[str, str]:
         """
         Fetch deals for ONE product (one url)
+        :return: Dict["product_name"] = "product_price"
         """
         deals = None
         logger.info(f'Fetch [{product}] deals from [{source.source_name}]')
@@ -106,23 +102,11 @@ class AbstractFetcher:
             logger.warning('Failed to fetch deals for [{}]. Reason [{}]'.format(source.source_name, exception))
         return deals
 
-    def _update_price(self, product_name, product_type, source_name, new_price):
+    def _display_best_deals(self) -> None:
+        if self.database is None:
+            logger.warning("Database is not available.")
+            return
 
-        source_id = self.db.insert_if_necessary(table='source',
-                                                columns=['source_name'],
-                                                values=[source_name])
-        product_id = self.db.insert_if_necessary(table='product',
-                                                 columns=['product_name', 'product_type'],
-                                                 values=[product_name, product_type])
-        today_last_price = self.db.get_last_price_for_today(product_id, source_id)
-        update_price_details = None
-        UpdatePriceDetails = namedtuple('UpdatePriceDetails', 'product_name source_name new_price today_last_price')
-        if today_last_price is None or today_last_price != new_price:
-            self.db.add_price(product_id, source_id, new_price, get_today_datetime())
-            update_price_details = UpdatePriceDetails(product_name, source_name, str(new_price), str(today_last_price) if today_last_price else None)
-        return update_price_details
-
-    def _display_best_deals(self):
         today_date = get_today_date()
         logger.info(f"Best deals for [{today_date}]")
         cheapest_products = []
@@ -146,8 +130,6 @@ class AbstractFetcher:
     def find_exactly_one_element(pattern_data, raw_data) -> Optional[str]:
         """
         Search a pattern_data among raw_data
-        Examples:
-
         """
         result = None
         refined_pattern_tokens = []
@@ -165,28 +147,3 @@ class AbstractFetcher:
         elif parsed:
             result = parsed[0]
         return result
-
-    @staticmethod
-    def _format_log_update_price_details(update_price_details):
-        """
-        Bloat code to fit to maximum length
-        TODO: refactor this
-        """
-        product_name_max_length = 0
-        source_name_max_length = 0
-        new_price_max_length = 0
-        today_last_price_max_length = 0
-        for detail in update_price_details:
-            product_name_max_length = max(product_name_max_length, len(detail.product_name))
-            source_name_max_length = max(source_name_max_length, len(detail.source_name))
-            new_price_max_length = max(new_price_max_length, len(detail.new_price))
-            if detail.today_last_price is not None:
-                today_last_price_max_length = max(today_last_price_max_length, len(detail.today_last_price))
-        template = 'New price for [{:' + str(product_name_max_length) + '}] from [{:' + str(
-            source_name_max_length) + '}] : [{:' + str(new_price_max_length) + '}]{}'
-        for detail in update_price_details:
-            previous_price_info = ''
-            if detail.today_last_price is not None:
-                previous_price_info = ' Today last price [{:' + str(today_last_price_max_length) + '}]'
-                previous_price_info.format(detail.today_last_price)
-            logger.info(template.format(detail.product_name, detail.source_name, detail.new_price, previous_price_info))
