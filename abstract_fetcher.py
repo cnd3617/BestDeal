@@ -5,7 +5,7 @@ import time
 from pricedatabase import PriceDatabase
 from abc import ABCMeta, abstractmethod
 from source import Source
-from typing import Optional, Dict
+from typing import Optional, Dict, Tuple
 from collections import namedtuple
 from loguru import logger
 from toolbox import get_today_date
@@ -18,6 +18,14 @@ class AbstractFetcher:
     def __init__(self, database: PriceDatabase):
         self.wait_in_seconds = 900
         self.database = database
+
+    @abstractmethod
+    def _get_source_product_urls(self) -> Dict[type(Source), Dict[str, str]]:
+        pass
+
+    @abstractmethod
+    def _extract_product_data(self, product_description) -> Tuple[Optional[str], Optional[str]]:
+        pass
 
     def continuous_watch(self):
         while 1:
@@ -133,14 +141,6 @@ class AbstractFetcher:
                        '[{product_name:' + str(max_lengths['product_name']) + '}] ' \
                        '[{source:' + str(max_lengths['source']) + '}]'
             logger.info(template.format(**product))
-
-    @abstractmethod
-    def _extract_product_data(self, product_description):
-        pass
-
-    @abstractmethod
-    def get_source_product_urls(self):
-        pass
 
     @staticmethod
     def find_exactly_one_element(pattern_data, raw_data) -> Optional[str]:

@@ -8,7 +8,7 @@ from cybertek import Cybertek
 from ldlc import LDLC
 from mindfactory import MindFactory
 from loguru import logger
-from typing import Dict
+from typing import Dict, Tuple, Optional
 from source import Source
 from pricedatabase import PriceDatabase
 
@@ -70,7 +70,7 @@ class NVidiaFetcher(AbstractFetcher):
             }
         }
 
-    def _extract_product_data(self, product_description):
+    def _extract_product_data(self, product_description) -> Tuple[Optional[str], Optional[str]]:
         brands = [
             'GAINWARD',
             'KFA2',
