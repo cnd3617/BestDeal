@@ -7,7 +7,8 @@ from source import Source
 from typing import Optional, Dict
 from collections import namedtuple
 from loguru import logger
-from datetime import datetime, timezone
+from toolbox import get_today_date
+from toolbox import get_today_datetime
 
 
 class AbstractFetcher:
@@ -16,14 +17,6 @@ class AbstractFetcher:
     def __init__(self, database):
         self.wait_in_seconds = 900
         self.database = database
-
-    @staticmethod
-    def get_today_date():
-        return datetime.now(timezone.utc).strftime('%Y%m%d')
-
-    @staticmethod
-    def get_today_datetime():
-        return datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')
 
     def continuous_watch(self):
         while 1:
@@ -107,12 +100,13 @@ class AbstractFetcher:
         update_price_details = None
         UpdatePriceDetails = namedtuple('UpdatePriceDetails', 'product_name source_name new_price today_last_price')
         if today_last_price is None or today_last_price != new_price:
-            self.db.add_price(product_id, source_id, new_price, self.db.get_today_datetime())
+            self.db.add_price(product_id, source_id, new_price, get_today_datetime())
             update_price_details = UpdatePriceDetails(product_name, source_name, str(new_price), str(today_last_price) if today_last_price else None)
         return update_price_details
 
     def _display_best_deals(self):
-        logger.info('Best deals for [{}]'.format(self.db.get_today_date()))
+        today_date = get_today_date()
+        logger.info(f"Best deals for [{today_date}]")
         cheapest_products = []
         for product_type in self.db.get_all_product_types():
             cheapest = self.db.get_cheapest(product_type, self.db.get_today_date())
