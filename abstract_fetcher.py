@@ -56,8 +56,8 @@ class AbstractFetcher:
                     continue
 
                 # Create posts to insert in mongodb
-                for product_description, product_price in deals.items():
-                    brand, product_type = self._extract_product_data(product_description)
+                for product_name, product_price in deals.items():
+                    brand, product_type = self._extract_product_data(product_name)
                     if product_type:
                         post = {"product_name": product_description,
                                 "product_brand": brand,
