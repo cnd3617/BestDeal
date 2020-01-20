@@ -2,6 +2,7 @@
 
 import re
 import time
+from pricedatabase import PriceDatabase
 from abc import ABCMeta, abstractmethod
 from source import Source
 from typing import Optional, Dict
@@ -14,7 +15,7 @@ from toolbox import get_today_datetime
 class AbstractFetcher:
     __metaclass__ = ABCMeta
 
-    def __init__(self, database):
+    def __init__(self, database: PriceDatabase):
         self.wait_in_seconds = 900
         self.database = database
 
