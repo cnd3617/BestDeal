@@ -19,7 +19,6 @@ class Cybertek(Source):
             span_tag.replace_with('')
 
     def _enrich_deals_from_soup(self, soup, deals):
-        # logger.info(soup.prettify())
         products = soup.findAll('div', attrs={'class': re.compile('ppp-*')})
         for product in products:
             tag = product.find('div', attrs={'class': re.compile('product*')})
