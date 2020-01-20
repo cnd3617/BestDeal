@@ -35,19 +35,21 @@ class NVidiaFetcher(AbstractFetcher):
                 'Multiple products': 'https://bit.ly/2McijjE'
             },
             RueDuCommerce: {
+                # TODO: fix RueDuCommerce
             },
             Cybertek: {
-                '1060 6GB': 'https://bit.ly/2OyuckC',
-                '1660': 'https://bit.ly/2uL1bJH',
-                '1660 TI': 'https://bit.ly/2YHhJjx',
-                '1660 SUPER': 'https://bit.ly/2OMkPyq',
-                '2060': 'https://bit.ly/2OITRYd',
-                '2060 SUPER': 'https://bit.ly/2OSyMe2',
-                '2070': 'https://bit.ly/2FElIo5',
-                '2070 SUPER': 'https://bit.ly/2rzczcX',
-                '2080': 'https://bit.ly/2TIQ4uM',
-                '2080 SUPER': 'https://bit.ly/2qOGE8y',
-                '2080 Ti': 'https://bit.ly/2JSMgaD',
+                # TODO: fix Cybertek
+                # '1060 6GB': 'https://bit.ly/2OyuckC',
+                # '1660': 'https://bit.ly/2uL1bJH',
+                # '1660 TI': 'https://bit.ly/2YHhJjx',
+                # '1660 SUPER': 'https://bit.ly/2OMkPyq',
+                # '2060': 'https://bit.ly/2OITRYd',
+                # '2060 SUPER': 'https://bit.ly/2OSyMe2',
+                # '2070': 'https://bit.ly/2FElIo5',
+                # '2070 SUPER': 'https://bit.ly/2rzczcX',
+                # '2080': 'https://bit.ly/2TIQ4uM',
+                # '2080 SUPER': 'https://bit.ly/2qOGE8y',
+                # '2080 Ti': 'https://bit.ly/2JSMgaD',
             },
             LDLC: {
                 '1660': 'https://bit.ly/2HPijWU',
@@ -58,6 +60,7 @@ class NVidiaFetcher(AbstractFetcher):
                 '2080 Ti': 'https://bit.ly/2HN8V6b',
             },
             MindFactory: {
+                # TODO: fix MindFactory
                 '1660': 'https://bit.ly/2QSN019',
                 '1660 TI': 'https://bit.ly/2KXXWHk',
                 '2060': 'https://bit.ly/2smzDw7',
