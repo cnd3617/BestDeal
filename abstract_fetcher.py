@@ -78,7 +78,7 @@ class AbstractFetcher:
                         posts.append(post)
                         #logger.info(post)
 
-        if self.database:
+        if self.database and posts:
             self.database.bulk_insert(posts)
 
             # deals = self._scrap(source, product_url_mapping)
