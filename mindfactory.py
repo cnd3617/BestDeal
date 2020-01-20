@@ -1,7 +1,7 @@
 # coding: utf-8
 
 from source import Source
-from loguru import logger
+from toolbox import clean_price
 
 
 class MindFactory(Source):
@@ -12,7 +12,7 @@ class MindFactory(Source):
         for product in soup.findAll('div', attrs={'class': 'pcontent'}):
             product_name = product.find('div', attrs={'class': 'pname'}).text
             product_price = product.find('div', attrs={'class': 'pprice'}).text
-            deals[product_name] = self.clean_price(product_price)
+            deals[product_name] = clean_price(product_price)
 
 
 # if __name__ == '__main__':

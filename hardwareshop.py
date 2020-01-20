@@ -2,6 +2,7 @@
 
 import re
 from source import Source
+from toolbox import clean_price
 
 
 class HardwareShop(Source):
@@ -16,5 +17,5 @@ class HardwareShop(Source):
             for script_section in soup.findAll('script'):
                 if '.price-wrapper' in script_section.text:
                     print(script_section.prettify())
-            product_price = self.clean_price(item.find('div', attrs={'class': 'price_prod_resp'}).text)
+            product_price = clean_price(item.find('div', attrs={'class': 'price_prod_resp'}).text)
             deals[product_name] = product_price

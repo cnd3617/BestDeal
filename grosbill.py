@@ -1,7 +1,7 @@
 # coding: utf-8
 
 from source import Source
-from loguru import logger
+from toolbox import clean_price
 
 
 class GrosBill(Source):
@@ -12,7 +12,7 @@ class GrosBill(Source):
         for product in soup.find('table', attrs={'id': 'listing_mode_display'}).findAll('tr'):
             try:
                 product_name = product.find('div', attrs={'class': 'product_description'}).find('a').text
-                product_price = self.clean_price(product.find('td', attrs={'class': 'btn_price_wrapper'}).find('b').text)
+                product_price = clean_price(product.find('td', attrs={'class': 'btn_price_wrapper'}).find('b').text)
                 deals[product_name] = product_price
             except:
                 pass

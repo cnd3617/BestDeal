@@ -2,7 +2,7 @@
 
 import re
 from source import Source
-from loguru import logger
+from toolbox import clean_price
 
 
 class Cybertek(Source):
@@ -27,7 +27,7 @@ class Cybertek(Source):
             self.remove_all_span(tag)
             second_part = tag.find('a', attrs={'class': 'prod_txt_left'}).text
             product_name = brand + self.remove_garbage_characters(second_part)
-            product_price = self.clean_price(product.find('div', attrs={'class': 'price_prod_resp'}).text)
+            product_price = clean_price(product.find('div', attrs={'class': 'price_prod_resp'}).text)
             deals[product_name] = product_price
 
 

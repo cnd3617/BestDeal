@@ -1,7 +1,7 @@
 # coding: utf-8
 
 from source import Source
-from loguru import logger
+from toolbox import clean_price
 
 
 class RueDuCommerce(Source):
@@ -17,7 +17,7 @@ class RueDuCommerce(Source):
         # logger.debug(soup.prettify())
         for item in soup.find_all('article', attrs={'itemtype': 'http://schema.org/Product'}):
             product_name = item.find('div', attrs={'class': 'summary'}).text
-            product_price = self.clean_price(item.find('div', attrs={'class': 'price'}).text)
+            product_price = clean_price(item.find('div', attrs={'class': 'price'}).text)
             deals[product_name] = product_price
 
 

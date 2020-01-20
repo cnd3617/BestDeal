@@ -1,6 +1,7 @@
 # coding: utf-8
 
 from source import Source
+from toolbox import clean_price
 
 
 class LDLC(Source):
@@ -11,7 +12,7 @@ class LDLC(Source):
         items = soup.find_all('div', attrs={'class': 'productWrapper'})
         for item in items:
             product_name = item.find('a', attrs={'class': 'designation'}).get('title')
-            product_price = self.clean_price(item.find('span', attrs={'class': 'price'}).text)
+            product_price = clean_price(item.find('span', attrs={'class': 'price'}).text)
             deals[product_name] = product_price
 
         items = soup.find_all('div', attrs={'class': 'swiper-slide'}) + soup.find_all('div', attrs={'class': 'details clearfix'})
@@ -21,7 +22,7 @@ class LDLC(Source):
                 continue
             anchor_item = txt_item.find('a')
             product_name = anchor_item.text
-            product_price = self.clean_price(item.find('div', attrs={'class': 'price'}).text)
+            product_price = clean_price(item.find('div', attrs={'class': 'price'}).text)
             deals[product_name] = product_price
 
 

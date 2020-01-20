@@ -1,6 +1,5 @@
 # coding: utf-8
 
-import re
 import bs4
 import requests
 from loguru import logger
@@ -21,6 +20,13 @@ class Source:
                         'Accept-Language': 'en-US,en;q=0.8',
                         'Connection': 'keep-alive'}
 
+    @abstractmethod
+    def _enrich_deals_from_soup(self, soup, deals):
+        """
+        HTML parsing is implemented in this method
+        """
+        pass
+
     def fetch_deals(self, product, url):
         """
         Beautiful Soup is used to process html.
@@ -37,19 +43,3 @@ class Source:
         else:
             logger.info(f'[{fetched_deals_count}] [{product}] from [{self.source_name}] found.')
         return deals
-
-    @staticmethod
-    def clean_price(dirty_price):
-        """
-        Clean the price to facilitate comparisons
-        """
-        dirty_price = dirty_price.replace(' ', '')
-        m = re.search('([0-9]+)[€.,]+([0-9]+)', dirty_price)
-        return '{}.{}'.format(m.group(1), m.group(2))
-
-    @abstractmethod
-    def _enrich_deals_from_soup(self, soup, deals):
-        """
-        HTML parsing is implemented in this method
-        """
-        pass

@@ -1,6 +1,7 @@
 # coding: utf-8
 
 from source import Source
+from toolbox import clean_price
 
 
 class TopAchat(Source):
@@ -10,5 +11,5 @@ class TopAchat(Source):
     def _enrich_deals_from_soup(self, soup, deals):
         for item in soup.findAll('article', attrs={'class': 'grille-produit'}):
             product_name = item.find('h3').text
-            product_price = self.clean_price(item.find('div', attrs={'itemprop': 'price'}).text)
+            product_price = clean_price(item.find('div', attrs={'itemprop': 'price'}).text)
             deals[product_name] = product_price
