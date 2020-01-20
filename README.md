@@ -9,15 +9,17 @@ Currently it implements a comparator of NVidia graphic cards among multiple hard
 
 BestDeal provides you a visualization tool to anticipate best timing to buy.
 
-Continuous quality integration
--------------
+### Continuous Integration and code quality
+
+Master branch:
+
 
 [![Build Status](https://travis-ci.org/RichardDally/BestDeal.svg?branch=master)](https://travis-ci.org/RichardDally/BestDeal)
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/09178071e8a8453fa2acc6d47a4937aa)](https://www.codacy.com/manual/RichardDally/BestDeal?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=RichardDally/BestDeal&amp;utm_campaign=Badge_Grade)
 
-Requirements
--------------
+
+### Requirements
 
 [Python 3.6+](https://www.python.org/downloads/)
 
@@ -31,11 +33,6 @@ Usage
 2. Run frontend.py to run a local web server displaying prices graph.
 3. Analyze and profit !
 
-Backend
--------------
-Backend is composed of two main modules : deals scrappers and price database.
-
-[Deals scrappers](https://github.com/RichardDally/BestDeal/blob/master/dealscrappers.py) will navigate on vendors page (e.g. Amazon) and scraps product name, type and price to store it in [price database](https://github.com/RichardDally/BestDeal/blob/master/pricedatabase.py) !
 
 MongoDB basics
 -------------
@@ -62,6 +59,23 @@ Filtering on timestamp:
     > db.NVidiaGPU.find({"product_brand": "GIGABYTE", "timestamp": /20191130_181011/})
 
 
-Frontend
+Backend
 -------------
+
+First class to start with is AbstractFetcher.
+`continuous_watch` function is convenient function to start fetching and storing data.
+It will repeatly calls two functions:
+`_scrap_and_store()` fetches, parses and stores product details (price, product type..) in MongoDB (I'm fed up of queries maintenance).
+`_display_best_deals()` find best prices for each product type.
+
+An example of AbstractFetcher currently implemented is focused on NVidia GPU from EU hardware vendors.
+
+Implementing a new fetcher is easy:
+1) Implement `get_source_product_urls` that returns source names and urls that we want to parse.
+2) Implement `_extract_product_data` that returns a Tuple composed of brand and product_type (e.g. "ASUS" and "2080 TI" for Nvidia) from scrapped product description .
+
+### Frontend
+
+:warning: Currently broken, any idea/PR are welcome to help analyze scrapped data.
+
 [Frontend](https://github.com/RichardDally/BestDeal/blob/master/frontend.py) uses [Dash](https://plot.ly/products/dash/) to display beautiful and customizable graphs.
