@@ -14,7 +14,7 @@ from pricedatabase import PriceDatabase
 
 
 class NVidiaFetcher(AbstractFetcher):
-    def __init__(self, database: PriceDatabase):
+    def __init__(self, database: Optional[PriceDatabase]):
         super().__init__(database)
 
     def _get_source_product_urls(self) -> Dict[type(Source), Dict[str, str]]:

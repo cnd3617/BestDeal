@@ -15,7 +15,7 @@ from toolbox import get_today_datetime
 class AbstractFetcher:
     __metaclass__ = ABCMeta
 
-    def __init__(self, database: PriceDatabase):
+    def __init__(self, database: Optional[PriceDatabase]):
         self.wait_in_seconds = 900
         self.database = database
 
