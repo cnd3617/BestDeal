@@ -23,7 +23,7 @@ class AbstractFetcher:
         while 1:
             try:
                 self._scrap_and_store()
-                # self._display_best_deals()
+                self._display_best_deals()
             except KeyboardInterrupt:
                 logger.info("Stopping gracefully...")
                 break
@@ -59,13 +59,22 @@ class AbstractFetcher:
                 for product_name, product_price in deals.items():
                     brand, product_type = self._extract_product_data(product_name)
                     if product_type:
-                        post = {"product_name": product_description,
+                        last_price = None
+                        last_update = self.database.find_last_price(product_name, get_today_date())
+                        if last_update:
+                            last_price = last_update["product_price"]
+                            if last_price == float(product_price):
+                                continue
+
+                        logger.info(f"New price for [{product_name}] [{product_price}] (previous [{last_price}])")
+
+                        post = {"product_name": product_name,
                                 "product_brand": brand,
                                 "product_type": product_type,
                                 "product_price": float(product_price),
                                 "source": source.source_name,
                                 "url": url,
-                                "timestamp": self.get_today_datetime()}
+                                "timestamp": get_today_datetime()}
                         posts.append(post)
                         #logger.info(post)
 
@@ -109,8 +118,8 @@ class AbstractFetcher:
         today_date = get_today_date()
         logger.info(f"Best deals for [{today_date}]")
         cheapest_products = []
-        for product_type in self.db.get_all_product_types():
-            cheapest = self.db.get_cheapest(product_type, self.db.get_today_date())
+        for product_type in self.database.find_distinct_product_types():
+            cheapest = self.database.find_cheapest(product_type, today_date)
             if cheapest is not None:
                 cheapest_products.append(cheapest)
         max_lengths = {}
@@ -120,9 +129,9 @@ class AbstractFetcher:
                 max_lengths[key] = max(max_lengths[key], len(str(value)))
         for product in cheapest_products:
             template = 'Cheapest [{product_type:' + str(max_lengths['product_type']) + '}] ' \
-                       '[{histo_price:' + str(max_lengths['histo_price']) + '}]€' \
+                       '[{product_price:' + str(max_lengths['product_price']) + '}]€' \
                        '[{product_name:' + str(max_lengths['product_name']) + '}] ' \
-                       '[{source_name:' + str(max_lengths['source_name']) + '}]'
+                       '[{source:' + str(max_lengths['source']) + '}]'
             logger.info(template.format(**product))
 
     @abstractmethod

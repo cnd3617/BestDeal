@@ -21,14 +21,25 @@ class PriceDatabase:
         result = self.collection.insert_many(posts)
         logger.debug(result)
 
-    def find_cheapest(self, product_type):
+    def find_distinct_product_types(self) -> list:
+        return self.collection.distinct("product_type")
+
+    def find_last_price(self, product_name: str, datetime_regex: str):
         """
-        TODO: fix method, filter on timestamp doesn't seem to work well
-        in MongoShell, this works:
-        > db.NVidiaGPU.find({"product_type": "2060", "timestamp": /20191130_/}).sort({product_price: 1}).limit(1)
+        Example find_last_price("KFA2 GeForce RTX 2080 Ti EX (1-Click OC), 11 Go", get_today_date())
         """
-        f = self.collection.find({"product_type": product_type})
-        # f = self.collection.find({"product_type": product_type, "timestamp": f"/{self.get_today_date()}_/"})
-        s = f.sort("product_price", ASCENDING)  # ascending price
-        for post in s.limit(1):
-            logger.info(post)
+        cursor = self.collection.find({"product_name": product_name, "timestamp": {'$regex': datetime_regex}})
+        cursor = cursor.sort("timestamp", ASCENDING)
+        for post in cursor.limit(1):
+            return post
+        return None
+
+    def find_cheapest(self, product_type: str, datetime_regex: str):
+        """
+        Example: find_cheapest("2080 TI", get_today_date())
+        """
+        first_cursor = self.collection.find({"product_type": product_type, "timestamp": {'$regex': datetime_regex}})
+        second_cursor = first_cursor.sort("product_price", ASCENDING)
+        for post in second_cursor.limit(1):
+            return post
+        return None
