@@ -53,7 +53,7 @@ class AbstractFetcher:
         """
 
         posts = []
-        for source_class, product_url_mapping in self.get_source_product_urls().items():
+        for source_class, product_url_mapping in self._get_source_product_urls().items():
             logger.debug(f"Processing source [{source_class}]")
             source = source_class()
 

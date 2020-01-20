@@ -17,7 +17,7 @@ class NVidiaFetcher(AbstractFetcher):
     def __init__(self, database: PriceDatabase):
         super().__init__(database)
 
-    def get_source_product_urls(self) -> Dict[type(Source), Dict[str, str]]:
+    def _get_source_product_urls(self) -> Dict[type(Source), Dict[str, str]]:
         return {
             TopAchat: {
                 '1660 SUPER': 'https://bit.ly/2CJDkOi',
