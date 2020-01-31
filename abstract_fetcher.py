@@ -52,6 +52,10 @@ class AbstractFetcher:
         product_url_mapping = {'1660 SUPER': 'https://bit.ly/2CJDkOi'}
         """
 
+        if self.database is None:
+            logger.warning("Database is not available.")
+            return
+
         posts = []
         for source_class, product_url_mapping in self._get_source_product_urls().items():
             logger.debug(f"Processing source [{source_class}]")
@@ -86,8 +90,10 @@ class AbstractFetcher:
                         posts.append(post)
                         #logger.info(post)
 
-        if self.database and posts:
+        if posts:
             self.database.bulk_insert(posts)
+        else:
+            logger.info("Nothing to insert")
 
     def _scrap_product(self, source: Source, product: str, url: str) -> Dict[str, str]:
         """
