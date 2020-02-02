@@ -21,7 +21,7 @@ class Source:
                         'Connection': 'keep-alive'}
 
     @abstractmethod
-    def _enrich_deals_from_soup(self, soup, deals: Dict[str, str]) -> None:
+    def _enrich_deals_from_soup(self, soup: bs4.BeautifulSoup, deals: Dict[str, str]) -> None:
         """
         HTML parsing is implemented in this method
         """
