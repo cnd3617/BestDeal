@@ -1,5 +1,6 @@
 # coding: utf-8
 
+import bs4
 from source import Source
 from toolbox import clean_price
 
@@ -8,28 +9,28 @@ class LDLC(Source):
     def __init__(self):
         super().__init__(source_name=__class__.__name__)
 
-    def _enrich_deals_from_soup(self, soup, deals):
-        items = soup.find_all('div', attrs={'class': 'productWrapper'})
-        for item in items:
-            product_name = item.find('a', attrs={'class': 'designation'}).get('title')
-            product_price = clean_price(item.find('span', attrs={'class': 'price'}).text)
-            deals[product_name] = product_price
+    def _enrich_deals_from_soup(self, soup: bs4.BeautifulSoup, deals):
+        for item in soup.find_all("script"):
+            if "ecommerce" in item.text:
+                for gpu in [x for x in item.text.split("{") if "name" in x]:
+                    product_name = None
+                    product_price = None
+                    # Look for name and price
+                    for token in gpu.strip().split(","):
+                        if "name" in token:
+                            product_name = token.split(":")[1].replace("'", "").strip()
+                        elif "price" in token:
+                            product_price = token.split(":")[1]
+                    if product_name and product_price:
+                        deals[product_name] = clean_price(product_price)
+                    else:
+                        logger.warning(f"Product name [{product_name}] and price [{product_price}] seem not available.")
 
-        items = soup.find_all('div', attrs={'class': 'swiper-slide'}) + soup.find_all('div', attrs={'class': 'details clearfix'})
-        for item in items:
-            txt_item = item.find('div', attrs={'class': 'txt'})
-            if txt_item is None:
-                continue
-            anchor_item = txt_item.find('a')
-            product_name = anchor_item.text
-            product_price = clean_price(item.find('div', attrs={'class': 'price'}).text)
-            deals[product_name] = product_price
 
-
-# if __name__ == '__main__':
-#     from loguru import logger
-#     vendor = LDLC()
-#     fetched_deals = vendor.fetch_deals()
-#     for deal in fetched_deals:
-#         logger.info(deal)
-#     print(logger.info(fetched_deals))
+if __name__ == '__main__':
+    from loguru import logger
+    vendor = LDLC()
+    fetched_deals = vendor.fetch_deals('1660', 'https://bit.ly/2OmH9PP')
+    for deal in fetched_deals:
+        logger.info(deal)
+    logger.info(fetched_deals)
