@@ -52,12 +52,16 @@ class NVidiaFetcher(AbstractFetcher):
                 # '2080 Ti': 'https://bit.ly/2JSMgaD',
             },
             LDLC: {
-                '1660': 'https://bit.ly/2HPijWU',
-                '1660 Ti': 'https://bit.ly/2uB0lPn',
-                '2060': 'https://bit.ly/2YAhVkl',
-                '2070': 'https://bit.ly/2uCuzBw',
-                '2080': 'https://bit.ly/2D4e7hd',
-                '2080 Ti': 'https://bit.ly/2HN8V6b',
+                '1660': 'https://www.ldlc.com/informatique/pieces-informatique/carte-graphique-interne/c4684/+foms-1+fv1026-5801+fv121-17465.html',
+                '1660 TI': 'https://www.ldlc.com/informatique/pieces-informatique/carte-graphique-interne/c4684/+foms-1+fv1026-5801+fv121-17425.html',
+                '1660 SUPER': 'https://www.ldlc.com/informatique/pieces-informatique/carte-graphique-interne/c4684/+foms-1+fv1026-5801+fv121-18053.html',
+                '2060': 'https://www.ldlc.com/informatique/pieces-informatique/carte-graphique-interne/c4684/+foms-1+fv1026-5801+fv121-17312.html',
+                '2060 SUPER': 'https://www.ldlc.com/informatique/pieces-informatique/carte-graphique-interne/c4684/+foms-1+fv1026-5801+fv121-17729.html',
+                '2070': 'https://www.ldlc.com/informatique/pieces-informatique/carte-graphique-interne/c4684/+foms-1+fv1026-5801+fv121-16760.html',
+                '2070 SUPER': 'https://www.ldlc.com/informatique/pieces-informatique/carte-graphique-interne/c4684/+foms-1+fv1026-5801+fv121-17730.html',
+                '2080': 'https://www.ldlc.com/informatique/pieces-informatique/carte-graphique-interne/c4684/+foms-1+fv1026-5801+fv121-16758.html',
+                '2080 SUPER': 'https://www.ldlc.com/informatique/pieces-informatique/carte-graphique-interne/c4684/+foms-1+fv1026-5801+fv121-17731.html',
+                '2080 Ti': 'https://www.ldlc.com/informatique/pieces-informatique/carte-graphique-interne/c4684/+foms-1+fv1026-5801+fv121-16759.html',
             },
             MindFactory: {
                 # TODO: fix MindFactory
