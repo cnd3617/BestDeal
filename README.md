@@ -29,10 +29,12 @@ Master branch:
 
 ### Requirements
 
-- MongoDB (storage)
-- BeautifulSoup (parsing)
-- Dash (web frontend)
+- MongoDB (persistent storage)
+- BeautifulSoup (html parsing)
 - Loguru (logging)
+- Tweepy (Twitter)
+- Python-Dotenv (secrets management)
+- Dash (web frontend)
 
 ### Usage
 
@@ -79,6 +81,17 @@ Implementing a new fetcher is easy:
 1) Implement `get_source_product_urls` that returns source name class and associated urls that we want to parse.
 2) Implement `_extract_product_data` that returns a Tuple composed of brand and product_type (e.g. "ASUS" and "2080 TI" for Nvidia) from scrapped product description .
 3) Create a new class (inherited from Source) that will implements `_enrich_deals_from_soup` (currently using BeautifulSoup)
+
+### Publish on Twitter
+
+Create a text file named `.env` containing your [Twitter app](https://developer.twitter.com/en/apps/) credentials
+
+    TWITTER_API_KEY="XXXX"
+    TWITTER_SECRET_KEY="XXXX"
+    TWITTER_ACCESS_TOKEN="XXXX"
+    TWITTER_TOKEN_SECRET="XXXX"
+
+Play with publish.py module
 
 ### Frontend
 
