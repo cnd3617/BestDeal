@@ -9,6 +9,7 @@ from typing import Optional, Dict, Tuple
 from loguru import logger
 from toolbox import get_today_date
 from toolbox import get_today_datetime
+from publish import tweet
 
 
 class AbstractFetcher:
@@ -26,11 +27,29 @@ class AbstractFetcher:
     def _extract_product_data(self, product_description) -> Tuple[Optional[str], Optional[str]]:
         pass
 
+    def _tweet_products(self):
+        for product_type in self.database.find_distinct_product_types():
+            self._tweet_cheapest_product(product_type)
+
+    def _tweet_cheapest_product(self, product_type):
+        """
+        Experimental stuff
+        """
+        try:
+            record = self.database.find_cheapest(product_type, get_today_date())
+            logger.info(record)
+            tweet_text = f"Cheapest [{product_type}]: {record['product_price']}€. Source {record['product_name']} in {record['url']}"
+            logger.info(f"Tweeting [{tweet_text}]")
+            # tweet(tweet_text)
+        except Exception as exception:
+            logger.exception(exception)
+
     def continuous_watch(self):
         while 1:
             try:
                 self._scrap_and_store()
                 self._display_best_deals()
+                # self._tweet_products()
             except KeyboardInterrupt:
                 logger.info("Stopping gracefully...")
                 break
