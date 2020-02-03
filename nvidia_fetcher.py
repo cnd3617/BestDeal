@@ -7,6 +7,7 @@ from rueducommerce import RueDuCommerce
 from cybertek import Cybertek
 from ldlc import LDLC
 from mindfactory import MindFactory
+from materiel import Materiel
 from loguru import logger
 from typing import Dict, Tuple, Optional
 from source import Source
@@ -71,6 +72,9 @@ class NVidiaFetcher(AbstractFetcher):
                 '2070': 'https://bit.ly/2DnaWlA',
                 '2080': 'https://bit.ly/33kaTRP',
                 '2080 TI': 'https://bit.ly/35EpY2h',
+            },
+            Materiel: {
+                # "1660": "https://www.materiel.net/carte-graphique/l426/+fv1026-5801+fv121-17465/",
             }
         }
 
