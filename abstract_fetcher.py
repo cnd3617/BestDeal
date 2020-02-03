@@ -6,7 +6,6 @@ from pricedatabase import PriceDatabase
 from abc import ABCMeta, abstractmethod
 from source import Source
 from typing import Optional, Dict, Tuple
-from collections import namedtuple
 from loguru import logger
 from toolbox import get_today_date
 from toolbox import get_today_datetime
