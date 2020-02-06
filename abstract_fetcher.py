@@ -9,6 +9,7 @@ from typing import Optional, Dict, Tuple
 from loguru import logger
 from toolbox import get_today_date
 from toolbox import get_today_datetime
+from toolbox import get_yesterday_date
 from publish import tweet
 
 
@@ -28,17 +29,33 @@ class AbstractFetcher:
         pass
 
     def _tweet_products(self):
-        for product_type in self.database.find_distinct_product_types():
+        """
+        Tweet only about 3 product types.
+        To tweet about all product types: self.database.find_distinct_product_types()
+        """
+        for product_type in ["2080", "2080 SUPER", "2080 TI"]:
             self._tweet_cheapest_product(product_type)
 
     def _tweet_cheapest_product(self, product_type):
         """
-        Experimental stuff
+        Experimental stuff, compare with yesterday cheapest price.
         """
         try:
-            record = self.database.find_cheapest(product_type, get_today_date())
-            logger.info(record)
-            tweet_text = f"Cheapest [{product_type}]: {record['product_price']}€. Source {record['product_name']} in {record['url']}"
+            today_cheapest = self.database.find_cheapest(product_type, get_today_date())
+            yesterday_cheapest = self.database.find_cheapest(product_type, get_yesterday_date())
+
+            today_price = float(today_cheapest['product_price'])
+            yesterday_price = float(yesterday_cheapest['product_price'])
+
+            percentage = None
+            if today_price != yesterday_price:
+                rate = ((today_price - yesterday_price) / yesterday_price) * 100
+                if abs(rate) >= 1.0:
+                    percentage = f"{'+' if rate > 0 else ''}{round(rate, 2)}%"
+
+            from_yesterday = f"(from yesterday {percentage})" if percentage else ""
+            tweet_text = f"Cheapest [{product_type}]: {today_cheapest['product_price']}€." \
+                         f" {today_cheapest['product_name']} in {today_cheapest['url']} {from_yesterday}"
             logger.info(f"Tweeting [{tweet_text}]")
             # tweet(tweet_text)
         except Exception as exception:
@@ -49,7 +66,7 @@ class AbstractFetcher:
             try:
                 self._scrap_and_store()
                 self._display_best_deals()
-                # self._tweet_products()
+                self._tweet_products()
             except KeyboardInterrupt:
                 logger.info("Stopping gracefully...")
                 break
