@@ -1,5 +1,9 @@
 import re
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
+
+
+def get_yesterday_date() -> str:
+    return datetime.strftime(datetime.now(timezone.utc) - timedelta(1), "%Y%m%d")
 
 
 def get_today_date() -> str:
