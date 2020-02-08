@@ -2,6 +2,27 @@ import re
 from datetime import datetime, timezone, timedelta
 
 
+def get_rightwards_arrow() -> str:
+    """
+    https://apps.timwhitlock.info/unicode/inspect/hex/27A1
+    """
+    return "\U000027A1"
+
+
+def get_south_east_arrow() -> str:
+    """
+    https://apps.timwhitlock.info/unicode/inspect/hex/2197
+    """
+    return "\U00002198"
+
+
+def get_north_east_arrow() -> str:
+    """
+    https://apps.timwhitlock.info/unicode/inspect/hex/2198
+    """
+    return "\U00002197"
+
+
 def get_yesterday_date() -> str:
     return datetime.strftime(datetime.now(timezone.utc) - timedelta(1), "%Y%m%d")
 
