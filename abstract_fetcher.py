@@ -53,7 +53,7 @@ class AbstractFetcher:
                 if abs(rate) >= 1.0:
                     percentage = f"{'+' if rate > 0 else ''}{round(rate, 2)}%"
 
-            from_yesterday = f"(from yesterday {percentage})" if percentage else ""
+            from_yesterday = f"(from yesterday {percentage})" if percentage else "(stable from yesterday)"
             tweet_text = f"Cheapest [{product_type}]: {today_cheapest['product_price']}€." \
                          f" {today_cheapest['product_name']} in {today_cheapest['url']} {from_yesterday}"
             logger.info(f"Tweeting [{tweet_text}]")
