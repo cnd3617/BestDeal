@@ -10,6 +10,12 @@ from loguru import logger
 from toolbox import get_today_date
 from toolbox import get_today_datetime
 from toolbox import get_yesterday_date
+from toolbox import get_north_east_arrow
+from toolbox import get_south_east_arrow
+from toolbox import get_rightwards_arrow
+from toolbox import get_lizard_emoji
+from toolbox import get_money_mouth_face_emoji
+from toolbox import get_link_emoji
 from publish import tweet
 
 
@@ -46,16 +52,23 @@ class AbstractFetcher:
 
             today_price = float(today_cheapest['product_price'])
             yesterday_price = float(yesterday_cheapest['product_price'])
+            logger.debug(f"Today price [{today_price}] yesterday price [{yesterday_price}]")
 
-            percentage = None
+            trend = get_rightwards_arrow()
+            percentage = ""
             if today_price != yesterday_price:
                 rate = ((today_price - yesterday_price) / yesterday_price) * 100
-                if abs(rate) >= 1.0:
-                    percentage = f"{'+' if rate > 0 else ''}{round(rate, 2)}%"
+                if rate > 0.:
+                    trend = get_north_east_arrow()
+                    percentage = f"+{round(rate, 2)}%"
+                elif rate < 0.:
+                    trend = get_south_east_arrow()
+                    percentage = f"{round(rate, 2)}%"
 
-            from_yesterday = f"(from yesterday {percentage})" if percentage else "(stable from yesterday)"
-            tweet_text = f"Cheapest [{product_type}]: {today_cheapest['product_price']}€." \
-                         f" {today_cheapest['product_name']} in {today_cheapest['url']} {from_yesterday}"
+            tweet_text = f"{get_lizard_emoji()} {today_cheapest['product_name']}\n" \
+                         f"{get_money_mouth_face_emoji()} {today_cheapest['product_price']}\n" \
+                         f"{get_link_emoji()} {today_cheapest['url']}\n" \
+                         f"From yesterday: {trend} {percentage}"
             logger.info(f"Tweeting [{tweet_text}]")
             # tweet(tweet_text)
         except Exception as exception:
