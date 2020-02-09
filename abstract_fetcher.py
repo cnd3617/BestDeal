@@ -66,7 +66,7 @@ class AbstractFetcher:
                     percentage = f"{round(rate, 2)}%"
 
             tweet_text = f"{get_lizard_emoji()} {today_cheapest['product_name']}\n" \
-                         f"{get_money_mouth_face_emoji()} {today_cheapest['product_price']}\n" \
+                         f"{get_money_mouth_face_emoji()} {today_cheapest['product_price']}€\n" \
                          f"{get_link_emoji()} {today_cheapest['url']}\n" \
                          f"From yesterday: {trend} {percentage}"
             logger.info(f"Tweeting [{tweet_text}]")
