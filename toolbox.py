@@ -37,8 +37,14 @@ def get_today_datetime() -> str:
 
 def clean_price(dirty_price):
     """
-    Clean the price to facilitate comparisons
+    Clean the price to facilitate comparisons.
+    I've picked dot as decimal separator (e.g. 42.359€)
+    Note every prices are supposed to be in euros, multi currencies is not implemented.
+    See clean_price_test module for example cases.
     """
+    # Handle Mindfactory case: 1.167,83€ (dot is cosmetic separator, comma is the real separator.)
+    if "." in dirty_price and "," in dirty_price:
+        dirty_price = dirty_price.replace(".", "")
     dirty_price = dirty_price.replace(' ', '')
     m = re.search('([0-9]+)[€.,]+([0-9]+)', dirty_price)
     return '{}.{}'.format(m.group(1), m.group(2))

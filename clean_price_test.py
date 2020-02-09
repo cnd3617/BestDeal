@@ -19,3 +19,6 @@ class TestCleanPrice(unittest.TestCase):
 
     def test_case_4(self):
         self.assertEqual(self.reference_price, clean_price('4 22€45'))
+
+    def test_case_5(self):
+        self.assertEqual("1167.83", clean_price('€ 1.167,83*'))
