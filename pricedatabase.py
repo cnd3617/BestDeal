@@ -43,3 +43,12 @@ class PriceDatabase:
         for post in second_cursor.limit(1):
             return post
         return None
+
+    def delete_price_anomalies(self) -> None:
+        """
+        Find GPU priced at 1€, scrapper bugs for instance.
+        """
+        throttle = 50
+        anomaly_filter = {"product_price": {"$lt": throttle}}
+        cursor = self.collection.delete_many(anomaly_filter)
+        logger.info(f"Deleted [{cursor.deleted_count}] under [{throttle}]€")

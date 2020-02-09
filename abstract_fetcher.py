@@ -77,6 +77,7 @@ class AbstractFetcher:
     def continuous_watch(self):
         while 1:
             try:
+                # self.database.delete_price_anomalies()
                 self._scrap_and_store()
                 self._display_best_deals()
                 self._tweet_products()
