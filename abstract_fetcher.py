@@ -55,7 +55,7 @@ class AbstractFetcher:
             logger.debug(f"Today price [{today_price}] yesterday price [{yesterday_price}]")
 
             trend = get_rightwards_arrow()
-            percentage = ""
+            percentage = "stable"
             if today_price != yesterday_price:
                 rate = ((today_price - yesterday_price) / yesterday_price) * 100
                 if rate > 0.:
@@ -68,8 +68,8 @@ class AbstractFetcher:
             tweet_text = f"{get_lizard_emoji()} {today_cheapest['product_name']}\n" \
                          f"{get_money_mouth_face_emoji()} {today_cheapest['product_price']}€\n" \
                          f"{get_link_emoji()} {today_cheapest['url']}\n" \
-                         f"From yesterday: {trend} {percentage}"
-            logger.info(f"Tweeting [{tweet_text}]")
+                         f"D-1: {trend} {percentage}"
+            # logger.info(f"Tweeting [{tweet_text}]")
             # tweet(tweet_text)
         except Exception as exception:
             logger.exception(exception)
