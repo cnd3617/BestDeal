@@ -18,7 +18,7 @@ class MindFactory(Source):
 
 if __name__ == '__main__':
     vendor = MindFactory()
-    fetched_deals = vendor.fetch_deals("1660", "https://bit.ly/2QSN019")
+    fetched_deals = vendor.fetch_deals("2080", "https://www.mindfactory.de/Hardware/Grafikkarten+(VGA)/GeForce+RTX+fuer+Gaming/RTX+2080.html")
     for deal in fetched_deals:
         logger.info(deal)
     logger.info('Fetched deals count [{}]'.format(len(fetched_deals)))
