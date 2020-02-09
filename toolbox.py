@@ -2,24 +2,37 @@ import re
 from datetime import datetime, timezone, timedelta
 
 
+"""
+Full emoji list (for Twitter usage):
+http://www.unicode.org/emoji/charts/full-emoji-list.html
+"""
+
+
+def get_money_mouth_face_emoji() -> str:
+    return "\U0001F911"
+
+
+def get_euro_banknote_emoji() -> str:
+    return "\U0001F4B6"
+
+
+def get_link_emoji() -> str:
+    return "\U0001F517"
+
+
+def get_lizard_emoji() -> str:
+    return "\U0001F98E"
+
+
 def get_rightwards_arrow() -> str:
-    """
-    https://apps.timwhitlock.info/unicode/inspect/hex/27A1
-    """
     return "\U000027A1"
 
 
 def get_south_east_arrow() -> str:
-    """
-    https://apps.timwhitlock.info/unicode/inspect/hex/2197
-    """
     return "\U00002198"
 
 
 def get_north_east_arrow() -> str:
-    """
-    https://apps.timwhitlock.info/unicode/inspect/hex/2198
-    """
     return "\U00002197"
 
 
