@@ -119,25 +119,29 @@ class AbstractFetcher:
                 # Create posts to insert in mongodb
                 for product_name, product_price in deals.items():
                     brand, product_type = self._extract_product_data(product_name)
-                    if product_type:
-                        last_price = None
-                        last_update = self.database.find_last_price(product_name, get_today_date())
-                        if last_update:
-                            last_price = last_update["product_price"]
-                            if last_price == float(product_price):
-                                continue
 
-                        logger.info(f"New price for [{product_name}] [{product_price}] (previous [{last_price}])")
+                    if product_type is None:
+                        continue
 
-                        post = {"product_name": product_name,
-                                "product_brand": brand,
-                                "product_type": product_type,
-                                "product_price": float(product_price),
-                                "source": source.source_name,
-                                "url": url,
-                                "timestamp": get_today_datetime()}
-                        posts.append(post)
-                        #logger.info(post)
+                    last_price = None
+                    last_update = self.database.find_last_price(product_name, get_today_date())
+                    if last_update:
+                        last_price = last_update["product_price"]
+                        if last_price == float(product_price):
+                            continue
+
+                    previous_price = f"(previous [{last_price}])" if last_price else ""
+                    logger.info(f"New price for [{product_name}] [{product_price}] {previous_price}")
+
+                    post = {"product_name": product_name,
+                            "product_brand": brand,
+                            "product_type": product_type,
+                            "product_price": float(product_price),
+                            "source": source.source_name,
+                            "url": url,
+                            "timestamp": get_today_datetime()}
+                    posts.append(post)
+                    #logger.info(post)
 
         if posts:
             self.database.bulk_insert(posts)
