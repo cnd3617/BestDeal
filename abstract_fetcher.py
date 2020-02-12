@@ -54,7 +54,7 @@ class AbstractFetcher:
                 return
 
             today_price = float(today_cheapest['product_price'])
-            yesterday_price = float(yesterday_cheapest['product_price']) if yesterday_cheapest['product_price'] else None
+            yesterday_price = float(yesterday_cheapest['product_price']) if yesterday_cheapest else None
             logger.debug(f"Today price [{today_price}] yesterday price [{yesterday_price}]")
 
             trend = None
