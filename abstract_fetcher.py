@@ -50,13 +50,16 @@ class AbstractFetcher:
             today_cheapest = self.database.find_cheapest(product_type, get_today_date())
             yesterday_cheapest = self.database.find_cheapest(product_type, get_yesterday_date())
 
+            if today_cheapest['product_price'] is None:
+                return
+
             today_price = float(today_cheapest['product_price'])
-            yesterday_price = float(yesterday_cheapest['product_price'])
+            yesterday_price = float(yesterday_cheapest['product_price']) if yesterday_cheapest['product_price'] else None
             logger.debug(f"Today price [{today_price}] yesterday price [{yesterday_price}]")
 
-            trend = get_rightwards_arrow()
-            percentage = "stable"
-            if today_price != yesterday_price:
+            trend = None
+            percentage = None
+            if yesterday_price and today_price != yesterday_price:
                 rate = ((today_price - yesterday_price) / yesterday_price) * 100
                 if rate > 0.:
                     trend = get_north_east_arrow()
@@ -64,12 +67,16 @@ class AbstractFetcher:
                 elif rate < 0.:
                     trend = get_south_east_arrow()
                     percentage = f"{round(rate, 2)}%"
+                else:
+                    trend = get_rightwards_arrow()
+                    percentage = "stable"
 
+            trend_line = f"\nD-1: {trend} {percentage}" if trend and percentage else ""
             tweet_text = f"{get_lizard_emoji()} {today_cheapest['product_name']}\n" \
                          f"{get_money_mouth_face_emoji()} {today_cheapest['product_price']}€\n" \
-                         f"{get_link_emoji()} {today_cheapest['url']}\n" \
-                         f"D-1: {trend} {percentage}"
-            # logger.info(f"Tweeting [{tweet_text}]")
+                         f"{get_link_emoji()} {today_cheapest['url']}" \
+                         f"{trend_line}"
+            logger.info(f"Tweeting [{tweet_text}]")
             # tweet(tweet_text)
         except Exception as exception:
             logger.exception(exception)
