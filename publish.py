@@ -1,11 +1,9 @@
 import os
 import tweepy
-from dotenv import load_dotenv
 from loguru import logger
 
 
 def get_twitter_api():
-    load_dotenv()
     auth = tweepy.OAuthHandler(consumer_key=os.environ.get("TWITTER_API_KEY"),
                                consumer_secret=os.environ.get("TWITTER_SECRET_KEY"))
     auth.set_access_token(key=os.environ.get("TWITTER_ACCESS_TOKEN"),

@@ -1,5 +1,6 @@
 # coding: utf-8
 
+from dotenv import load_dotenv
 from abstract_fetcher import AbstractFetcher
 from topachat import TopAchat
 from grosbill import GrosBill
@@ -117,6 +118,7 @@ class NVidiaFetcher(AbstractFetcher):
 
 
 if __name__ == '__main__':
-    db = PriceDatabase(host='localhost', port=27017, collection_name='NVidiaGPU')
+    load_dotenv()
+    db = PriceDatabase(collection_name='NVidiaGPU')
     fetcher = NVidiaFetcher(db)
     fetcher.continuous_watch()
