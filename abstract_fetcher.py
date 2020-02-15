@@ -59,7 +59,7 @@ class AbstractFetcher:
 
             trend = None
             percentage = None
-            if yesterday_price and today_price != yesterday_price:
+            if today_price and yesterday_price:
                 rate = ((today_price - yesterday_price) / yesterday_price) * 100
                 if rate > 0.:
                     trend = get_north_east_arrow()
