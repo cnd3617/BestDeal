@@ -45,6 +45,20 @@ class PriceDatabase:
             return post
         return None
 
+    def find_oldest_from_all_times(self, product_type: str):
+        first_cursor = self.collection.find({"product_type": product_type})
+        second_cursor = first_cursor.sort("timestamp", ASCENDING)
+        for post in second_cursor.limit(1):
+            return post
+        return None
+
+    def find_cheapest_from_all_times(self, product_type: str):
+        first_cursor = self.collection.find({"product_type": product_type})
+        second_cursor = first_cursor.sort("product_price", ASCENDING)
+        for post in second_cursor.limit(1):
+            return post
+        return None
+
     def delete_price_anomalies(self) -> None:
         """
         Find GPU priced at 1€, scrapper bugs for instance.
