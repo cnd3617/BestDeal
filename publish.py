@@ -1,5 +1,6 @@
 import os
 import tweepy
+from typing import Optional
 from loguru import logger
 
 
@@ -11,9 +12,12 @@ def get_twitter_api():
     return tweepy.API(auth)
 
 
-def tweet(text_to_publish):
-    api = get_twitter_api()
-    api.update_status(status=text_to_publish)
+def tweet(text_to_publish: Optional[str]):
+    if text_to_publish:
+        api = get_twitter_api()
+        api.update_status(status=text_to_publish)
+    else:
+        logger.warning("Nothing to publish...")
 
 
 if __name__ == "__main__":
