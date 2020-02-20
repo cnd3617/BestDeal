@@ -101,7 +101,11 @@ class AbstractFetcher:
         logger.debug(f"Today price [{today_price}] yesterday price [{yesterday_price}]")
 
         yesterday_comparison = self._build_comparison("D-1", today_price, yesterday_price)
-        all_times_comparison = self._build_comparison("All times", today_price, all_times_price)
+
+        if all_times_price and today_price <= all_times_price:
+            all_times_comparison = "All times: Lowest price detected."
+        else:
+            all_times_comparison = self._build_comparison("All times", today_price, all_times_price)
 
         tweet_text = f"{get_lizard_emoji()} {today_cheapest['product_name']}\n" \
                      f"{get_money_mouth_face_emoji()} {today_cheapest['product_price']}€\n" \
