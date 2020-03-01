@@ -17,6 +17,7 @@ from toolbox import get_lizard_emoji
 from toolbox import get_money_mouth_face_emoji
 from toolbox import get_link_emoji
 from toolbox import get_see_no_evil_monkey_emoji
+from toolbox import get_first_place_medal_emoji
 from publish import tweet
 
 
@@ -103,15 +104,17 @@ class AbstractFetcher:
         yesterday_comparison = self._build_comparison("D-1", today_price, yesterday_price)
 
         if all_times_price and today_price <= all_times_price:
-            all_times_comparison = "All times: Lowest price detected."
+            all_times_comparison = f"All times: {get_first_place_medal_emoji()} lowest price detected !"
         else:
             all_times_comparison = self._build_comparison("All times", today_price, all_times_price)
 
-        tweet_text = f"{get_lizard_emoji()} {today_cheapest['product_name']}\n" \
-                     f"{get_money_mouth_face_emoji()} {today_cheapest['product_price']}€\n" \
-                     f"{get_link_emoji()} {today_cheapest['url']}\n" \
-                     f"{yesterday_comparison}\n" \
-                     f"{all_times_comparison}"
+        tweet_text = \
+            f"{today_cheapest['product_name']}\n" \
+            f"{get_lizard_emoji()} {today_cheapest['product_type']}\n" \
+            f"{get_money_mouth_face_emoji()} {today_cheapest['product_price']}€\n" \
+            f"{get_link_emoji()} {today_cheapest['url']}\n" \
+            f"{yesterday_comparison}\n" \
+            f"{all_times_comparison}"
         logger.info(f"Tweeting [{tweet_text}]")
         return tweet_text
 

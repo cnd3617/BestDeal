@@ -8,6 +8,10 @@ http://www.unicode.org/emoji/charts/full-emoji-list.html
 """
 
 
+def get_first_place_medal_emoji() -> str:
+    return "\U0001F947"
+
+
 def get_see_no_evil_monkey_emoji() -> str:
     return "\U0001F648"
 
