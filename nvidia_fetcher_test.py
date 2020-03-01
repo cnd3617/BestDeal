@@ -6,7 +6,7 @@ from nvidia_fetcher import NVidiaFetcher
 
 class TestFindExactlyOneElement(unittest.TestCase):
     def setUp(self) -> None:
-        self.fetcher = NVidiaFetcher(":in_memory:")
+        self.fetcher = NVidiaFetcher(database=None)
 
     @unittest.skip("TODO")
     def test_case_1(self):
@@ -18,7 +18,7 @@ class TestFindExactlyOneElement(unittest.TestCase):
 
 class TestExtractProductData(unittest.TestCase):
     def setUp(self) -> None:
-        self.fetcher = NVidiaFetcher(":in_memory:")
+        self.fetcher = NVidiaFetcher(database=None)
 
     def test_case_1(self):
         product_description = 'Palit GeForce GTX 1660 Ti StormX, 6 Go'
