@@ -43,3 +43,21 @@ class TestExtractProductData(unittest.TestCase):
         brand, product_type = self.fetcher._extract_product_data(product_description)
         self.assertEqual('GIGABYTE', brand)
         self.assertEqual('1050 TI', product_type)
+
+    def test_case_5(self):
+        product_description = 'MSI RTX 3080 Ti 6 Go'
+        brand, product_type = self.fetcher._extract_product_data(product_description)
+        self.assertEqual('MSI', brand)
+        self.assertEqual('3080 TI', product_type)
+
+    def test_case_6(self):
+        product_description = 'RTX 3070 GAINWARD'
+        brand, product_type = self.fetcher._extract_product_data(product_description)
+        self.assertEqual('GAINWARD', brand)
+        self.assertEqual('3070', product_type)
+
+    def test_case_7(self):
+        product_description = 'RTX PNY 3080'
+        brand, product_type = self.fetcher._extract_product_data(product_description)
+        self.assertEqual('PNY', brand)
+        self.assertEqual('3080', product_type)

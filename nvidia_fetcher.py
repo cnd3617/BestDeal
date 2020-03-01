@@ -92,12 +92,11 @@ class NVidiaFetcher(AbstractFetcher):
             'INNO3D',
         ]
         lineup_type = ['TI', 'SUPER']
-        product_classes = ['1050', '1060', '1660', '1070', '1080', '2060', '2070', '2080']
+        standard_lineup = ['1050', '1060', '1660', '1070', '1080', '2060', '2070', '2080', '3070', '3080']
         higher_lineup = {
-            'TI': ['1050', '1660', '2080'],
+            'TI': ['1050', '1660', '2080', '3080'],
             'SUPER': ['1660', '2060', '2070', '2080']
         }
-        standard_lineup = ['1050', '1060', '1070', '1080', '1660', '2060', '2070', '2080']
 
         brand = self.find_exactly_one_element(brands, product_description)
         if not brand:
@@ -105,14 +104,17 @@ class NVidiaFetcher(AbstractFetcher):
             return None, None
 
         lineup_type_result = self.find_exactly_one_element(lineup_type, product_description)
-        product_class = self.find_exactly_one_element(product_classes, product_description)
+        product_class = self.find_exactly_one_element(standard_lineup, product_description)
 
-        product_type = None
-        if lineup_type_result and product_class in higher_lineup[lineup_type_result] or product_class in standard_lineup:
+        if lineup_type_result is None:
+            # Standard lineup
             product_type = product_class
-
-        if product_type is not None and lineup_type_result is not None:
-            product_type += f' {lineup_type_result}'
+        elif product_class in higher_lineup[lineup_type_result]:
+            # Higher lineup
+            product_type = f'{product_class} {lineup_type_result}'
+        else:
+            # Unknown
+            product_type = None
 
         return brand, product_type
 
