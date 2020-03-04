@@ -19,6 +19,13 @@ class NVidiaFetcher(AbstractFetcher):
     def __init__(self, database: Optional[PriceDatabase]):
         super().__init__(database)
 
+    def _get_tweeted_product_types(self) -> List[str]:
+        """
+        Return product types you want to appear in tweets (one for each)
+        To tweet about all product types: self.database.find_distinct_product_types()
+        """
+        return ["2080", "2080 SUPER", "2080 TI"]
+
     def _get_source_product_urls(self) -> Dict[type(Source), Dict[str, str]]:
         return {
             TopAchat: {
