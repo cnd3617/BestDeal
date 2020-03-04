@@ -5,18 +5,16 @@ import time
 from pricedatabase import PriceDatabase
 from abc import ABCMeta, abstractmethod
 from source import Source
-from typing import Optional, Dict, Tuple
+from typing import Optional, Dict, Tuple, List
 from loguru import logger
-from toolbox import get_today_date
-from toolbox import get_today_datetime
-from toolbox import get_yesterday_date
 from toolbox import get_north_east_arrow
 from toolbox import get_south_east_arrow
 from toolbox import get_rightwards_arrow
+from toolbox import get_see_no_evil_monkey_emoji
+from toolbox import get_today_date, get_today_datetime, get_yesterday_date
 from toolbox import get_lizard_emoji
 from toolbox import get_money_mouth_face_emoji
 from toolbox import get_link_emoji
-from toolbox import get_see_no_evil_monkey_emoji
 from toolbox import get_first_place_medal_emoji
 from publish import tweet
 
@@ -36,12 +34,43 @@ class AbstractFetcher:
     def _extract_product_data(self, product_description) -> Tuple[Optional[str], Optional[str]]:
         pass
 
+    @abstractmethod
+    def _get_tweeted_product_types(self) -> List[str]:
+        pass
+
+    def _format_cheapest_product_tweet(self, product_type: str) -> str:
+        all_times_cheapest = self.database.find_cheapest_from_all_times(product_type)
+        today_cheapest = self.database.find_cheapest(product_type, get_today_date())
+        yesterday_cheapest = self.database.find_cheapest(product_type, get_yesterday_date())
+
+        if today_cheapest['product_price'] is None:
+            raise Exception(f"Missing today data for product [{product_type}]")
+
+        today_price = float(today_cheapest['product_price'])
+        yesterday_price = float(yesterday_cheapest['product_price']) if yesterday_cheapest else None
+        all_times_price = float(all_times_cheapest['product_price']) if all_times_cheapest else None
+        logger.debug(f"Today price [{today_price}] yesterday price [{yesterday_price}]")
+
+        yesterday_comparison = self._build_comparison("D-1", today_price, yesterday_price)
+
+        if all_times_price and today_price <= all_times_price:
+            all_times_comparison = f"All times: {get_first_place_medal_emoji()} lowest price detected !"
+        else:
+            all_times_comparison = self._build_comparison("All times", today_price, all_times_price)
+
+        # TODO: Improve tweet for CPU !
+        tweet_text = \
+            f"{today_cheapest['product_name']}\n" \
+            f"{get_lizard_emoji()} {today_cheapest['product_type']}\n" \
+            f"{get_money_mouth_face_emoji()} {today_cheapest['product_price']}€\n" \
+            f"{get_link_emoji()} {today_cheapest['url']}\n" \
+            f"{yesterday_comparison}\n" \
+            f"{all_times_comparison}"
+        logger.info(f"Tweeting [{tweet_text}]")
+        return tweet_text
+
     def _tweet_products(self):
-        """
-        Tweet only about 3 product types.
-        To tweet about all product types: self.database.find_distinct_product_types()
-        """
-        for product_type in ["2080", "2080 SUPER", "2080 TI"]:
+        for product_type in self._get_tweeted_product_types():
             try:
                 tweet_text = self._format_cheapest_product_tweet(product_type)
                 # tweet(tweet_text)
@@ -84,39 +113,6 @@ class AbstractFetcher:
         trend = self._deduce_trend(evolution_rate)
         trend_line = f"{title}: {trend} {percentage}"
         return trend_line
-
-    def _format_cheapest_product_tweet(self, product_type: str) -> str:
-        """
-        Experimental stuff, compare with yesterday cheapest price.
-        """
-        all_times_cheapest = self.database.find_cheapest_from_all_times(product_type)
-        today_cheapest = self.database.find_cheapest(product_type, get_today_date())
-        yesterday_cheapest = self.database.find_cheapest(product_type, get_yesterday_date())
-
-        if today_cheapest['product_price'] is None:
-            raise Exception(f"Missing today data for product [{product_type}]")
-
-        today_price = float(today_cheapest['product_price'])
-        yesterday_price = float(yesterday_cheapest['product_price']) if yesterday_cheapest else None
-        all_times_price = float(all_times_cheapest['product_price']) if all_times_cheapest else None
-        logger.debug(f"Today price [{today_price}] yesterday price [{yesterday_price}]")
-
-        yesterday_comparison = self._build_comparison("D-1", today_price, yesterday_price)
-
-        if all_times_price and today_price <= all_times_price:
-            all_times_comparison = f"All times: {get_first_place_medal_emoji()} lowest price detected !"
-        else:
-            all_times_comparison = self._build_comparison("All times", today_price, all_times_price)
-
-        tweet_text = \
-            f"{today_cheapest['product_name']}\n" \
-            f"{get_lizard_emoji()} {today_cheapest['product_type']}\n" \
-            f"{get_money_mouth_face_emoji()} {today_cheapest['product_price']}€\n" \
-            f"{get_link_emoji()} {today_cheapest['url']}\n" \
-            f"{yesterday_comparison}\n" \
-            f"{all_times_comparison}"
-        logger.info(f"Tweeting [{tweet_text}]")
-        return tweet_text
 
     def continuous_watch(self):
         while 1:
