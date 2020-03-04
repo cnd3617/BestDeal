@@ -10,7 +10,7 @@ from ldlc import LDLC
 from mindfactory import MindFactory
 from materiel import Materiel
 from loguru import logger
-from typing import Dict, Tuple, Optional
+from typing import Dict, Tuple, Optional, List
 from source import Source
 from pricedatabase import PriceDatabase
 

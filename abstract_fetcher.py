@@ -226,7 +226,7 @@ class AbstractFetcher:
             logger.info(template.format(**product))
 
     @staticmethod
-    def find_exactly_one_element(pattern_data, raw_data) -> Optional[str]:
+    def find_exactly_one_element(pattern_data: list, raw_data: str) -> Optional[str]:
         """
         Search a pattern_data among raw_data
         """
