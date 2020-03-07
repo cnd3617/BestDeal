@@ -114,18 +114,22 @@ class AbstractFetcher:
         trend_line = f"{title}: {trend} {percentage}"
         return trend_line
 
+    def main_loop(self):
+        try:
+            # self.database.delete_price_anomalies()
+            self._scrap_and_store()
+            self._display_best_deals()
+            self._tweet_products()
+        except Exception as exception:
+            logger.exception(exception)
+
     def continuous_watch(self):
         while 1:
             try:
-                # self.database.delete_price_anomalies()
-                self._scrap_and_store()
-                self._display_best_deals()
-                self._tweet_products()
+                self.main_loop()
             except KeyboardInterrupt:
                 logger.info("Stopping gracefully...")
                 break
-            except Exception as exception:
-                logger.exception(exception)
 
             try:
                 logger.info(f"Waiting [{self.wait_in_seconds}] seconds until next deal watch")
