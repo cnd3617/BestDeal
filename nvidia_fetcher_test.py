@@ -6,7 +6,7 @@ from nvidia_fetcher import NVidiaFetcher
 
 class TestFindExactlyOneElement(unittest.TestCase):
     def setUp(self) -> None:
-        self.fetcher = NVidiaFetcher(":in_memory:")
+        self.fetcher = NVidiaFetcher(database=None)
 
     @unittest.skip("TODO")
     def test_case_1(self):
@@ -18,7 +18,7 @@ class TestFindExactlyOneElement(unittest.TestCase):
 
 class TestExtractProductData(unittest.TestCase):
     def setUp(self) -> None:
-        self.fetcher = NVidiaFetcher(":in_memory:")
+        self.fetcher = NVidiaFetcher(database=None)
 
     def test_case_1(self):
         product_description = 'Palit GeForce GTX 1660 Ti StormX, 6 Go'
@@ -43,3 +43,21 @@ class TestExtractProductData(unittest.TestCase):
         brand, product_type = self.fetcher._extract_product_data(product_description)
         self.assertEqual('GIGABYTE', brand)
         self.assertEqual('1050 TI', product_type)
+
+    def test_case_5(self):
+        product_description = 'MSI RTX 3080 Ti 6 Go'
+        brand, product_type = self.fetcher._extract_product_data(product_description)
+        self.assertEqual('MSI', brand)
+        self.assertEqual('3080 TI', product_type)
+
+    def test_case_6(self):
+        product_description = 'RTX 3070 GAINWARD'
+        brand, product_type = self.fetcher._extract_product_data(product_description)
+        self.assertEqual('GAINWARD', brand)
+        self.assertEqual('3070', product_type)
+
+    def test_case_7(self):
+        product_description = 'RTX PNY 3080'
+        brand, product_type = self.fetcher._extract_product_data(product_description)
+        self.assertEqual('PNY', brand)
+        self.assertEqual('3080', product_type)

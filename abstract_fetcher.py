@@ -2,82 +2,219 @@
 
 import re
 import time
-import pricedatabase
+from pricedatabase import PriceDatabase
 from abc import ABCMeta, abstractmethod
 from source import Source
-from typing import Optional, Dict
-from collections import namedtuple
+from typing import Optional, Dict, Tuple, List
 from loguru import logger
+from toolbox import get_north_east_arrow
+from toolbox import get_south_east_arrow
+from toolbox import get_rightwards_arrow
+from toolbox import get_see_no_evil_monkey_emoji
+from toolbox import get_today_date, get_today_datetime, get_yesterday_date
+from toolbox import get_lizard_emoji
+from toolbox import get_money_mouth_face_emoji
+from toolbox import get_link_emoji
+from toolbox import get_first_place_medal_emoji
+from publish import tweet
 
 
 class AbstractFetcher:
     __metaclass__ = ABCMeta
 
-    def __init__(self, database_filename):
+    def __init__(self, database: Optional[PriceDatabase]):
         self.wait_in_seconds = 900
-        self.database_filename = database_filename
-        self.db = pricedatabase.PriceDatabase(self.database_filename)
+        self.database = database
 
-    def continuous_watch(self):
-        while True:
+    @abstractmethod
+    def _get_source_product_urls(self) -> Dict[type(Source), Dict[str, str]]:
+        pass
+
+    @abstractmethod
+    def _extract_product_data(self, product_description) -> Tuple[Optional[str], Optional[str]]:
+        pass
+
+    @abstractmethod
+    def _get_tweeted_product_types(self) -> List[str]:
+        pass
+
+    def _format_cheapest_product_tweet(self, product_type: str) -> str:
+        all_times_cheapest = self.database.find_cheapest_from_all_times(product_type)
+        today_cheapest = self.database.find_cheapest(product_type, get_today_date())
+        yesterday_cheapest = self.database.find_cheapest(product_type, get_yesterday_date())
+
+        if today_cheapest['product_price'] is None:
+            raise Exception(f"Missing today data for product [{product_type}]")
+
+        today_price = float(today_cheapest['product_price'])
+        yesterday_price = float(yesterday_cheapest['product_price']) if yesterday_cheapest else None
+        all_times_price = float(all_times_cheapest['product_price']) if all_times_cheapest else None
+        logger.debug(f"Today price [{today_price}] yesterday price [{yesterday_price}]")
+
+        yesterday_comparison = self._build_comparison("D-1", today_price, yesterday_price)
+
+        if all_times_price and today_price <= all_times_price:
+            all_times_comparison = f"All times: {get_first_place_medal_emoji()} lowest price detected !"
+        else:
+            all_times_comparison = self._build_comparison("All times", today_price, all_times_price)
+
+        # TODO: Improve tweet for CPU !
+        tweet_text = \
+            f"{today_cheapest['product_name']}\n" \
+            f"{get_lizard_emoji()} {today_cheapest['product_type']}\n" \
+            f"{get_money_mouth_face_emoji()} {today_cheapest['product_price']}€\n" \
+            f"{get_link_emoji()} {today_cheapest['url']}\n" \
+            f"{yesterday_comparison}\n" \
+            f"{all_times_comparison}"
+        logger.info(f"Tweeting [{tweet_text}]")
+        return tweet_text
+
+    def _tweet_products(self):
+        for product_type in self._get_tweeted_product_types():
             try:
-                self._scrap_and_store()
-                self._display_best_deals()
+                tweet_text = self._format_cheapest_product_tweet(product_type)
+                # tweet(tweet_text)
             except Exception as exception:
                 logger.exception(exception)
-            logger.info('Waiting [{}] seconds until next deal watch'.format(self.wait_in_seconds))
-            time.sleep(self.wait_in_seconds)
+
+    def _compute_evolution_rate(self, today_price: Optional[float], reference_price: Optional[float]) -> Optional[float]:
+        rate = None
+        if today_price and reference_price:
+            rate = ((today_price - reference_price) / reference_price) * 100
+        else:
+            logger.warning(f"Cannot compare today price [{today_price}] with reference price [{reference_price}]")
+        return rate
+
+    def _stringify_evolution_rate(self, evolution_rate: Optional[float]) -> str:
+        if evolution_rate is None:
+            percentage = "Missing data"
+        elif evolution_rate > 0.:
+            percentage = f"+{round(evolution_rate, 2)}%"
+        elif evolution_rate < 0.:
+            percentage = f"{round(evolution_rate, 2)}%"
+        else:
+            percentage = "stable"
+        return percentage
+
+    def _deduce_trend(self, evolution_rate: Optional[float]) -> str:
+        if evolution_rate is None:
+            trend = get_see_no_evil_monkey_emoji()
+        elif evolution_rate > 0.:
+            trend = get_north_east_arrow()
+        elif evolution_rate < 0.:
+            trend = get_south_east_arrow()
+        else:
+            trend = get_rightwards_arrow()
+        return trend
+
+    def _build_comparison(self, title, today_price, reference_price):
+        evolution_rate = self._compute_evolution_rate(today_price, reference_price)
+        percentage = self._stringify_evolution_rate(evolution_rate)
+        trend = self._deduce_trend(evolution_rate)
+        trend_line = f"{title}: {trend} {percentage}"
+        return trend_line
+
+    def main_loop(self):
+        try:
+            # self.database.delete_price_anomalies()
+            self._scrap_and_store()
+            self._display_best_deals()
+            self._tweet_products()
+        except Exception as exception:
+            logger.exception(exception)
+
+    def continuous_watch(self):
+        while 1:
+            try:
+                self.main_loop()
+            except KeyboardInterrupt:
+                logger.info("Stopping gracefully...")
+                break
+
+            try:
+                logger.info(f"Waiting [{self.wait_in_seconds}] seconds until next deal watch")
+                time.sleep(self.wait_in_seconds)
+            except KeyboardInterrupt:
+                logger.info("Stopping gracefully...")
+                break
 
     def _scrap_and_store(self):
-        for source_class, product_url_mapping in self.get_source_product_urls().items():
-            source = source_class()
-            deals = self._scrap(source, product_url_mapping)
-            update_price_details = self._store(source, deals)
-            if update_price_details:
-                self._format_log_update_price_details(update_price_details)
+        """
+        Example:
+        source_class = TopAchat
+        product_url_mapping = {'1660 SUPER': 'https://bit.ly/2CJDkOi'}
+        """
 
-    def _scrap(self, vendor: Source, product_url_mapping) -> Dict[str, str]:
-        deals = []
-        logger.info('Fetch deals from [{}]'.format(vendor.source_name))
+        if self.database is None:
+            logger.warning("Database is not available.")
+            return
+
+        posts = []
+        for source_class, product_url_mapping in self._get_source_product_urls().items():
+            logger.debug(f"Processing source [{source_class}]")
+            source = source_class()
+
+            # Scrap every available products for current source
+            for product, url in product_url_mapping.items():
+                deals = self._scrap_product(source, product, url)
+                if not deals:
+                    continue
+
+                # Create posts to insert in mongodb
+                for product_name, product_price in deals.items():
+                    brand, product_type = self._extract_product_data(product_name)
+
+                    if product_type is None:
+                        continue
+
+                    last_price = None
+                    last_update = self.database.find_last_price(product_name, get_today_date())
+                    if last_update:
+                        last_price = last_update["product_price"]
+                        if last_price == float(product_price):
+                            continue
+
+                    previous_price = f"(previous [{last_price}])" if last_price else ""
+                    logger.info(f"New price for [{product_name}] [{product_price}] {previous_price}")
+
+                    post = {"product_name": product_name,
+                            "product_brand": brand,
+                            "product_type": product_type,
+                            "product_price": float(product_price),
+                            "source": source.source_name,
+                            "url": url,
+                            "timestamp": get_today_datetime()}
+                    posts.append(post)
+                    #logger.info(post)
+
+        if posts:
+            self.database.bulk_insert(posts)
+        else:
+            logger.info("Nothing to insert")
+
+    def _scrap_product(self, source: Source, product: str, url: str) -> Dict[str, str]:
+        """
+        Fetch deals for ONE product (one url)
+        :return: Dict["product_name"] = "product_price"
+        """
+        deals = None
+        logger.info(f'Fetch [{product}] deals from [{source.source_name}]')
         try:
-            deals = vendor.fetch_deals(product_url_mapping)
+            deals = source.fetch_deals(product, url)
         except Exception as exception:
-            logger.warning('Failed to fetch deals for [{}]. Reason [{}]'.format(vendor.source_name, exception))
+            logger.warning('Failed to fetch deals for [{}]. Reason [{}]'.format(source.source_name, exception))
         return deals
 
-    def _store(self, source, deals):
-        update_price_details = []
-        for product_description, product_price in deals.items():
-            brand, product_type = self._extract_product_data(product_description)
-            if product_type:
-                update_price_detail = self._update_price(product_description, product_type, source.source_name,
-                                                        float(product_price))
-                if update_price_detail is not None:
-                    update_price_details.append(update_price_detail)
-            else:
-                logger.debug(f'Ignoring [{product_description}]')
-        return update_price_details
+    def _display_best_deals(self) -> None:
+        if self.database is None:
+            logger.warning("Database is not available.")
+            return
 
-    def _update_price(self, product_name, product_type, source_name, new_price):
-        source_id = self.db.insert_if_necessary(table='source',
-                                                columns=['source_name'],
-                                                values=[source_name])
-        product_id = self.db.insert_if_necessary(table='product',
-                                                 columns=['product_name', 'product_type'],
-                                                 values=[product_name, product_type])
-        today_last_price = self.db.get_last_price_for_today(product_id, source_id)
-        update_price_details = None
-        UpdatePriceDetails = namedtuple('UpdatePriceDetails', 'product_name source_name new_price today_last_price')
-        if today_last_price is None or today_last_price != new_price:
-            self.db.add_price(product_id, source_id, new_price, self.db.get_today_datetime())
-            update_price_details = UpdatePriceDetails(product_name, source_name, str(new_price), str(today_last_price) if today_last_price else None)
-        return update_price_details
-
-    def _display_best_deals(self):
-        logger.info('Best deals for [{}]'.format(self.db.get_today_date()))
+        today_date = get_today_date()
+        logger.info(f"Best deals for [{today_date}]")
         cheapest_products = []
-        for product_type in self.db.get_all_product_types():
-            cheapest = self.db.get_cheapest(product_type, self.db.get_today_date())
+        for product_type in self.database.find_distinct_product_types():
+            cheapest = self.database.find_cheapest(product_type, today_date)
             if cheapest is not None:
                 cheapest_products.append(cheapest)
         max_lengths = {}
@@ -87,25 +224,15 @@ class AbstractFetcher:
                 max_lengths[key] = max(max_lengths[key], len(str(value)))
         for product in cheapest_products:
             template = 'Cheapest [{product_type:' + str(max_lengths['product_type']) + '}] ' \
-                       '[{histo_price:' + str(max_lengths['histo_price']) + '}]€' \
+                       '[{product_price:' + str(max_lengths['product_price']) + '}]€' \
                        '[{product_name:' + str(max_lengths['product_name']) + '}] ' \
-                       '[{source_name:' + str(max_lengths['source_name']) + '}]'
+                       '[{source:' + str(max_lengths['source']) + '}]'
             logger.info(template.format(**product))
 
-    @abstractmethod
-    def _extract_product_data(self, product_description):
-        pass
-
-    @abstractmethod
-    def get_source_product_urls(self):
-        pass
-
     @staticmethod
-    def find_exactly_one_element(pattern_data, raw_data) -> Optional[str]:
+    def find_exactly_one_element(pattern_data: list, raw_data: str) -> Optional[str]:
         """
         Search a pattern_data among raw_data
-        Examples:
-
         """
         result = None
         refined_pattern_tokens = []
@@ -123,28 +250,3 @@ class AbstractFetcher:
         elif parsed:
             result = parsed[0]
         return result
-
-    @staticmethod
-    def _format_log_update_price_details(update_price_details):
-        """
-        Bloat code to fit to maximum length
-        TODO: refactor this
-        """
-        product_name_max_length = 0
-        source_name_max_length = 0
-        new_price_max_length = 0
-        today_last_price_max_length = 0
-        for detail in update_price_details:
-            product_name_max_length = max(product_name_max_length, len(detail.product_name))
-            source_name_max_length = max(source_name_max_length, len(detail.source_name))
-            new_price_max_length = max(new_price_max_length, len(detail.new_price))
-            if detail.today_last_price is not None:
-                today_last_price_max_length = max(today_last_price_max_length, len(detail.today_last_price))
-        template = 'New price for [{:' + str(product_name_max_length) + '}] from [{:' + str(
-            source_name_max_length) + '}] : [{:' + str(new_price_max_length) + '}]{}'
-        for detail in update_price_details:
-            previous_price_info = ''
-            if detail.today_last_price is not None:
-                previous_price_info = ' Today last price [{:' + str(today_last_price_max_length) + '}]'
-                previous_price_info.format(detail.today_last_price)
-            logger.info(template.format(detail.product_name, detail.source_name, detail.new_price, previous_price_info))

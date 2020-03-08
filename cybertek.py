@@ -2,6 +2,7 @@
 
 import re
 from source import Source
+from toolbox import clean_price
 from loguru import logger
 
 
@@ -19,7 +20,6 @@ class Cybertek(Source):
             span_tag.replace_with('')
 
     def _enrich_deals_from_soup(self, soup, deals):
-        # logger.info(soup.prettify())
         products = soup.findAll('div', attrs={'class': re.compile('ppp-*')})
         for product in products:
             tag = product.find('div', attrs={'class': re.compile('product*')})
@@ -27,13 +27,13 @@ class Cybertek(Source):
             self.remove_all_span(tag)
             second_part = tag.find('a', attrs={'class': 'prod_txt_left'}).text
             product_name = brand + self.remove_garbage_characters(second_part)
-            product_price = self.clean_price(product.find('div', attrs={'class': 'price_prod_resp'}).text)
+            product_price = clean_price(product.find('div', attrs={'class': 'price_prod_resp'}).text)
             deals[product_name] = product_price
 
 
-# if __name__ == '__main__':
-#     vendor = Cybertek()
-#     fetched_deals = vendor.fetch_deals()
-#     for deal in fetched_deals:
-#         logger.info(deal)
-#     logger.info('Fetched deals count [{}]'.format(len(fetched_deals)))
+if __name__ == '__main__':
+    vendor = Cybertek()
+    fetched_deals = vendor.fetch_deals("1660", "https://bit.ly/2uL1bJH")
+    for deal in fetched_deals:
+        logger.info(deal)
+    logger.info('Fetched deals count [{}]'.format(len(fetched_deals)))
