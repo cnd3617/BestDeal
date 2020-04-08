@@ -46,29 +46,26 @@ class CpuFetcher(AbstractFetcher):
             },
         }
 
-    def _extract_product_data(self, product_description) -> Tuple[Optional[str], Optional[str]]:
+    def _extract_intel_product_data(self, product_description) -> Tuple[Optional[str], Optional[str]]:
+        lineup_type = ["Core i9"]
+        standard_lineup = ["9900KF"]
+        higher_lineup = {
+            "CORE I9":    ["9900KF"]
+        }
+        product_type = None
+        return "INTEL", product_type
 
-        # Define the different brands and products of CPU
-
-        brands = [
-            'AMD',
-            'Intel',
-        ]
+    def _extract_amd_product_data(self, product_description) -> Tuple[Optional[str], Optional[str]]:
         lineup_type = ['Ryzen 3', 'Ryzen 5', 'Ryzen 7', 'Ryzen 9', 'Core']
-        standard_lineup = ['3200G', '1600 AF', '1600X', '2600X', '2600', '1400', '3600X', '3600', '2700X', '3700X', '3800X', '3900X', '3950X', 'I9-9900KF']
+        standard_lineup = ['3200G', '1600 AF', '1600X', '2600X', '2600', '1400', '3600X', '3600', '2700X', '3700X',
+                           '3800X', '3900X', '3950X', 'I9-9900KF']
         higher_lineup = {
             "RYZEN 3": ["3200G"],
             "RYZEN 5": ["1600 AF", "1600X", "2600X", "2600", "1400", "3600X", "3600"],
             "RYZEN 7": ["2700X", "3700X", "3800X"],
             "RYZEN 9": ["3900X", "3950X"],
-            "CORE": ["I9-9900KF"]
+            "CORE":    ["I9-9900KF"]
         }
-
-        # Looking for CPU
-        brand = self.find_exactly_one_element(brands, product_description)
-        if not brand:
-            logger.warning(f'Brand not found in product [{product_description}]')
-            return None, None
 
         lineup_type_result = self.find_exactly_one_element(lineup_type, product_description)
 
@@ -85,7 +82,21 @@ class CpuFetcher(AbstractFetcher):
             logger.warning(f"Product type not found in product [{product_description}]")
             return None, None
 
-        return brand, product_type
+        return "AMD", product_type
+
+    def _extract_product_data(self, product_description) -> Tuple[Optional[str], Optional[str]]:
+        extract_mapping = {
+            "AMD":  self._extract_amd_product_data,
+            "INTEL": self._extract_intel_product_data
+        }
+        # Identify CPU brand
+        brand = self.find_exactly_one_element(extract_mapping.keys(), product_description)
+        if not brand:
+            logger.warning(f'Brand not found in product [{product_description}]')
+            return None, None
+
+        return extract_mapping[brand](product_description)
+
 
 if __name__ == '__main__':
     load_dotenv()
