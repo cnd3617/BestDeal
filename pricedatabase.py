@@ -8,12 +8,13 @@ from loguru import logger
 class PriceDatabase:
     """
     Powered by MongoDB <3
+    https://www.mongodb.com
     """
 
     def __init__(self, collection_name):
         self.database_name = "PriceHistorization"
         logger.info('Connecting to database [{}]'.format(self.database_name))
-        self.client = MongoClient(os.environ.get("ATLAS_CONNECTION_STRING"))
+        self.client = MongoClient(os.environ.get("MONGODB_CONNECTION_STRING"))
         self.database = self.client[self.database_name]
         self.collection = self.database[collection_name]
 
