@@ -12,7 +12,6 @@ class RueDuCommerce(Source):
     Blocked by: https://datadome.co/fr/
     """
     def __init__(self):
-        sites = []
         super().__init__(source_name=__class__.__name__)
 
     def _enrich_deals_from_soup(self, soup, deals):

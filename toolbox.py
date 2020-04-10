@@ -2,11 +2,8 @@ import re
 from datetime import datetime, timezone, timedelta
 
 
-"""
-Full emoji list (for Twitter usage):
-http://www.unicode.org/emoji/charts/full-emoji-list.html
-"""
-
+# Full emoji list (for Twitter usage):
+# http://www.unicode.org/emoji/charts/full-emoji-list.html
 
 def get_first_place_medal_emoji() -> str:
     return "\U0001F947"

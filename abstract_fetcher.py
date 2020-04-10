@@ -77,7 +77,8 @@ class AbstractFetcher:
             except Exception as exception:
                 logger.exception(exception)
 
-    def _compute_evolution_rate(self, today_price: Optional[float], reference_price: Optional[float]) -> Optional[float]:
+    @staticmethod
+    def _compute_evolution_rate(today_price: Optional[float], reference_price: Optional[float]) -> Optional[float]:
         rate = None
         if today_price and reference_price:
             rate = ((today_price - reference_price) / reference_price) * 100
@@ -85,7 +86,8 @@ class AbstractFetcher:
             logger.warning(f"Cannot compare today price [{today_price}] with reference price [{reference_price}]")
         return rate
 
-    def _stringify_evolution_rate(self, evolution_rate: Optional[float]) -> str:
+    @staticmethod
+    def _stringify_evolution_rate(evolution_rate: Optional[float]) -> str:
         if evolution_rate is None:
             percentage = "Missing data"
         elif evolution_rate > 0.:
@@ -96,7 +98,8 @@ class AbstractFetcher:
             percentage = "stable"
         return percentage
 
-    def _deduce_trend(self, evolution_rate: Optional[float]) -> str:
+    @staticmethod
+    def _deduce_trend(evolution_rate: Optional[float]) -> str:
         if evolution_rate is None:
             trend = get_see_no_evil_monkey_emoji()
         elif evolution_rate > 0.:

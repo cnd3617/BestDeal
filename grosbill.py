@@ -14,7 +14,7 @@ class GrosBill(Source):
                 product_name = product.find('div', attrs={'class': 'product_description'}).find('a').text
                 product_price = clean_price(product.find('td', attrs={'class': 'btn_price_wrapper'}).find('b').text)
                 deals[product_name] = product_price
-            except:
+            except Exception as exception:
                 pass
 
 

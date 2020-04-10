@@ -7,8 +7,8 @@ from toolbox import clean_price
 
 class HardwareShop(Source):
     def __init__(self):
+        super().__init__(source_name=__class__.__name__)
         raise NotImplementedError()
-        super().__init__(source_name=__class__.__name__, sites=sites)
 
     def _enrich_deals_from_soup(self, soup, deals):
         items = soup.find_all('li', attrs={'data-ref': re.compile("[A-Za-z0-9]")})
