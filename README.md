@@ -38,8 +38,10 @@ Master branch:
 
 ### Usage
 
-1. Run nvidia_fetcher.py to feed price database (powered by [MongoDB](https://docs.mongodb.com)).
-2. Run frontend.py to run a local web server displaying prices graph. (currently broken)
+#### Looking for GPU (NVidia only for the moment)
+
+1. Create your [.env file](https://github.com/theskumar/python-dotenv) containing MongoDB credentials (e.g. MONGODB_CONNECTION_STRING=mongodb://localhost:27017)
+2. Run nvidia_fetcher.py to feed price database (powered by [MongoDB](https://docs.mongodb.com)).
 3. Analyze and profit !
 
 ### MongoDB basics
