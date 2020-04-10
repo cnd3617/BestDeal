@@ -23,8 +23,14 @@ class AbstractFetcher:
     __metaclass__ = ABCMeta
 
     def __init__(self, database: Optional[PriceDatabase]):
-        self.wait_in_seconds = 900
+        """
+        database: PriceDatabase object to access database
+        wait_in_seconds: waiting time before two scans
+        tweet_products: publish on Twitter lowest prices
+        """
         self.database = database
+        self.wait_in_seconds = 900
+        self.tweet_products = False
 
     @abstractmethod
     def _get_source_product_urls(self) -> Dict[type(Source), Dict[str, str]]:
@@ -66,14 +72,14 @@ class AbstractFetcher:
             f"{get_link_emoji()} {today_cheapest['url']}\n" \
             f"{yesterday_comparison}\n" \
             f"{all_times_comparison}"
-        logger.info(f"Tweeting [{tweet_text}]")
+        logger.debug(f"Tweeting [{tweet_text}]")
         return tweet_text
 
     def _tweet_products(self):
         for product_type in self._get_tweeted_product_types():
             try:
                 tweet_text = self._format_cheapest_product_tweet(product_type)
-                # tweet(tweet_text)
+                tweet(tweet_text)
             except Exception as exception:
                 logger.exception(exception)
 
@@ -122,7 +128,8 @@ class AbstractFetcher:
             # self.database.delete_price_anomalies()
             self._scrap_and_store()
             self._display_best_deals()
-            self._tweet_products()
+            if self.tweet_products:
+                self._tweet_products()
         except Exception as exception:
             logger.exception(exception)
 
@@ -188,7 +195,7 @@ class AbstractFetcher:
                             "url": url,
                             "timestamp": get_today_datetime()}
                     posts.append(post)
-                    #logger.info(post)
+                    #logger.debug(post)
 
         if posts:
             self.database.bulk_insert(posts)
