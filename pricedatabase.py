@@ -14,9 +14,11 @@ class PriceDatabase:
     def __init__(self, collection_name):
         self.database_name = "PriceHistorization"
         logger.info('Connecting to database [{}]'.format(self.database_name))
-        self.client = MongoClient(os.environ.get("MONGODB_CONNECTION_STRING"))
+        #self.client = MongoClient(os.environ.get("MONGODB_CONNECTION_STRING"))
+        self.client = MongoClient('mongo', port=27017)
         self.database = self.client[self.database_name]
         self.collection = self.database[collection_name]
+
 
     def bulk_insert(self, posts):
         logger.debug(f"Inserting [{len(posts)}] posts")
