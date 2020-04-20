@@ -1,4 +1,4 @@
-FROM bestdeal/cpython:3.8.2
+FROM richarddally/cpython:3.8.2_18.04
 
 MAINTAINER r.dally@protonmail.com
 
